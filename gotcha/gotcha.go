@@ -29,7 +29,7 @@ func main() {
 func new(name string) {
 	log.Printf("Creating application: '%s'\n", name)
 
-	err := os.Mkdir(name, 0644)
+	err := os.Mkdir(name, 0777)
 	if err != nil {
 		log.Fatalf("Error creating application directory: %s", err)
 	}
