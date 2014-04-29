@@ -5,32 +5,13 @@ A(nother) web framework for Go.
 
 ### Getting started
 
-Set your GOPATH and add it to PATH:
-```
-    export GOPATH=/path/to/src/root
-    export PATH=$PATH:$GOPATH/bin
-```
-
-Install Gotcha (unless you've downloaded a binary release):
-```
-    cd /path/to/src/root/github.com/ian-kent/Gotcha
-    make
-```
-
-Somewhere else inside your GOPATH, create an application:
-```
-    cd /path/to/src/root/github.com/your-name
-    gotcha new MyApp
-    cd MyApp
-```
-
-Install and run your application:
-```
-    gotcha install
-    MyApp
-```
-
-Open your application in a browser: http://localhost:7050
+* Make sure your [Go environment](http://golang.org/doc/install) is configured.
+* Download the latest Gotcha release
+* Create a new application: ```gotcha new MyApp```
+* Change to the application directory: ```cd MyApp```
+* Install your application: ```gotcha install```
+* Run your application: ```MyApp```
+* Open your application in a browser: http://localhost:7050
 
 ### Why another web framework
 
@@ -51,3 +32,17 @@ It's portable. That makes the first point easy to achieve with
 almost no additional work.
 
 It's also got (mostly) nice syntax and awesome concurrency support!
+
+### Contributing
+
+* Clone this repository: ```git clone https://github.com/ian-kent/gotcha```
+* Run tests: ```make test```
+* Install gotcha: ```make```
+
+If you make any changes, run ```go fmt``` before submitting a pull request.
+
+### Licence
+
+Copyright ©‎ 2014, Ian Kent (http://www.iankent.eu).
+
+Released under MIT license, see [LICENSE](license) for details.
