@@ -31,3 +31,7 @@ func (r *Response) WriteText(text string) {
 func (r *Response) Status(status int) {
 	r.writer.WriteHeader(status)
 }
+
+func (r *Response) Headers() nethttp.Header {
+	return r.writer.Header()
+}

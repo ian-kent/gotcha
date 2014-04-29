@@ -3,6 +3,7 @@ package Router
 import (
 	"github.com/ian-kent/gotcha/config"
 	"github.com/ian-kent/gotcha/http"
+	"github.com/ian-kent/gotcha/mime"
 	"log"
 	nethttp "net/http"
 	"regexp"
@@ -81,9 +82,18 @@ func (h *Router) Options(pattern string, handler HandlerFunc) {
 	h.Handler([]string{"OPTIONS"}, pattern, handler)
 }
 
-func Static(filename string) HandlerFunc {
+func (h *Router) Static(filename string) HandlerFunc {
 	return func(session *http.Session, route *Route) {
-		session.Response.NotFound()
+		asset, err := h.Config.AssetLoader(filename)
+		if err != nil {
+			session.Response.NotFound()
+		} else {
+			m := MIME.TypeFromFilename(filename)
+			if len(m) > 0 {
+				session.Response.Headers().Add("Content-Type", m[0])
+			}
+			session.Response.Write(asset)
+		}
 	}
 }
 

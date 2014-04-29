@@ -1,0 +1,15 @@
+
+header {
+	width: 386px;
+	margin: auto;
+	text-align: center;
+	margin-top: 50px;
+	margin-bottom: 75px;
+}
+header img {
+	display: block;
+	margin: auto;
+}
+section {
+	text-align: center;
+}

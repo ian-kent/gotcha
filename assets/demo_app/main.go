@@ -14,6 +14,9 @@ func main() {
 	r.Get("/", example)
 	r.Get("/foo", example2)
 
+	r.Get("/images/logo-ish.png", r.Static("assets/images/logo-ish.png"))
+	r.Get("/css/default.css", r.Static("assets/css/default.css"))
+
 	log.Println("Starting application")
 	app.Start()
 
