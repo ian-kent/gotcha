@@ -20,7 +20,7 @@ func (r *Response) NotFound() {
 	nethttp.NotFound(r.writer, r.session.Request.Unwrap())
 }
 
-func (r *Response) Write(bytes []byte) (int,error) {
+func (r *Response) Write(bytes []byte) (int, error) {
 	return r.writer.Write(bytes)
 }
 

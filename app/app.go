@@ -14,13 +14,13 @@ type App struct {
 	Ch     chan int
 }
 
-func Create(assetLoader func(string)([]byte,error)) *App {
+func Create(assetLoader func(string) ([]byte, error)) *App {
 	config := Config.Create(assetLoader)
 
 	app := &App{
 		Config: config,
 		Router: Router.Create(config),
-		Ch: make(chan int),
+		Ch:     make(chan int),
 	}
 	return app
 }
@@ -29,7 +29,7 @@ func (app *App) Start() {
 	app.Server = &http.Server{
 		Addr:    app.Config.Listen,
 		Handler: app.Router,
-	};
+	}
 	go app.Server.ListenAndServe()
 	log.Printf("Listening on %s\n", app.Config.Listen)
 }

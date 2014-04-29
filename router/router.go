@@ -1,8 +1,8 @@
 package Router
 
 import (
+	"github.com/ian-kent/gotcha/config"
 	"github.com/ian-kent/gotcha/http"
-    "github.com/ian-kent/gotcha/config"
 	"log"
 	nethttp "net/http"
 	"regexp"
@@ -43,14 +43,14 @@ func (f HandlerFunc) ServeHTTP(session *http.Session, route *Route) {
 }
 
 type Router struct {
-    Config *Config.Config
+	Config *Config.Config
 	routes []*Route
 }
 
 func Create(config *Config.Config) *Router {
-    return &Router{
-        Config: config,
-    }
+	return &Router{
+		Config: config,
+	}
 }
 
 func (h *Router) Routes() []*Route {
@@ -121,6 +121,6 @@ func (h *Router) Serve(session *http.Session) {
 
 func (h *Router) ServeHTTP(w nethttp.ResponseWriter, r *nethttp.Request) {
 	log.Printf("%s %s\n", r.Method, r.URL)
-    session := http.CreateSession(h.Config, r, w)
+	session := http.CreateSession(h.Config, r, w)
 	h.Serve(session)
 }

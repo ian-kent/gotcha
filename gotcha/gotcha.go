@@ -43,12 +43,12 @@ func new(name string) {
 	log.Printf("Creating application: '%s'\n", name)
 
 	createDir(name)
-	writeAsset("assets/demo_app/main.go2", name + "/main.go")
-	writeAsset("assets/demo_app/Makefile", name + "/Makefile")
-	writeAsset("assets/demo_app/README.md", name + "/README.md")
-	
+	writeAsset("assets/demo_app/main.go2", name+"/main.go")
+	writeAsset("assets/demo_app/Makefile", name+"/Makefile")
+	writeAsset("assets/demo_app/README.md", name+"/README.md")
+
 	createDir(name + "/assets/templates")
-	writeAsset("assets/demo_app/assets/templates/index.html", name + "/assets/templates/index.html")
+	writeAsset("assets/demo_app/assets/templates/index.html", name+"/assets/templates/index.html")
 }
 
 func createDir(dir string) {

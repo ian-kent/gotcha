@@ -1,24 +1,24 @@
 package http
 
 import (
+	"bytes"
+	"github.com/ian-kent/gotcha/config"
+	"html/template"
 	"log"
 	nethttp "net/http"
-	"html/template"
-	"github.com/ian-kent/gotcha/config"
-	"bytes"
 )
 
 type Session struct {
-	Config *Config.Config
-	Request *Request
+	Config   *Config.Config
+	Request  *Request
 	Response *Response
-	Stash map[string]interface{}
+	Stash    map[string]interface{}
 }
 
 func CreateSession(conf *Config.Config, request *nethttp.Request, writer nethttp.ResponseWriter) *Session {
 	session := &Session{
 		Config: conf,
-		Stash: make(map[string]interface{},0),
+		Stash:  make(map[string]interface{}, 0),
 	}
 
 	session.Request = CreateRequest(session, request)
@@ -32,7 +32,7 @@ func (session *Session) render(asset string) error {
 
 	var t *template.Template
 
-	c, ok := session.Config.Cache["template:" + asset]
+	c, ok := session.Config.Cache["template:"+asset]
 	if !ok {
 		log.Printf("Parsing template: %s", asset)
 		t = template.New(asset)
@@ -47,7 +47,7 @@ func (session *Session) render(asset string) error {
 			return err
 		}
 		log.Printf("Template parsed successfully: %s", asset)
-		session.Config.Cache["template:" + asset] = t
+		session.Config.Cache["template:"+asset] = t
 	} else {
 		t = c.(*template.Template)
 		log.Printf("Template loaded from cache: %s", asset)

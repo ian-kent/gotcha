@@ -7,9 +7,9 @@ import (
 
 type Request struct {
 	Session *Session
-	req    *nethttp.Request
-	URL    *neturl.URL
-	Method string
+	req     *nethttp.Request
+	URL     *neturl.URL
+	Method  string
 }
 
 func CreateRequest(session *Session, request *nethttp.Request) *Request {
