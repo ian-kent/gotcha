@@ -12,7 +12,7 @@ func main() {
 
 	r := app.Router
 	r.Get("/", example)
-	r.Get("/2", example2)
+	r.Get("/foo", example2)
 
 	log.Println("Starting application")
 	app.Start()
