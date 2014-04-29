@@ -23,3 +23,7 @@ func (r *Response) NotFound() {
 func (r *Response) Write(bytes []byte) {
 	r.writer.Write(bytes)
 }
+
+func (r *Response) WriteText(text string) {
+	r.writer.Write([]byte(text))
+}

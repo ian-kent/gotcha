@@ -65,7 +65,7 @@ func main() {
 }
 
 func example(w *http.Response, r *http.Request, route *Router.Route) {
-	w.Write([]byte("Hello world!"))
+	w.WriteText("Hello world!")
 }
 `)
 
