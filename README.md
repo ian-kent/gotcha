@@ -11,7 +11,7 @@ A(nother) web framework for Go.
 * Change to the application directory: ```cd MyApp```
 * Install your application: ```gotcha install```
 * Run your application: ```MyApp```
-* Open your application in a browser: (http://localhost:7050)
+* Open your application in a browser: [http://localhost:7050](http://localhost:7050)
 
 ### Features
 
