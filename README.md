@@ -57,6 +57,15 @@ It's also got (mostly) nice syntax and awesome concurrency support!
 
 ### Contributing
 
+#### Feature requests
+
+* [Open a new issue](https://github.com/ian-kent/gotcha/issues/new)
+* Explain your use-case(s)
+* Explain why it should be part of the framework
+* Have a go at implementing it :)
+
+#### Pull requests
+
 * Clone this repository: ```git clone https://github.com/ian-kent/gotcha```
 * Run tests: ```make test```
 * Install gotcha: ```make```
