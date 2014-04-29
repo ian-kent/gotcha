@@ -1,17 +1,17 @@
 package app
 
 import (
+	"github.com/ian-kent/Go-Gotcha/config"
+	"github.com/ian-kent/Go-Gotcha/router"
 	"log"
 	"net/http"
-	"github.com/ian-kent/Go-Gotcha/router"
-	"github.com/ian-kent/Go-Gotcha/config"
 )
 
 type App struct {
 	Config *Config.Config
 	Router *Router.Router
 	Server *http.Server
-	Ch chan int
+	Ch     chan int
 }
 
 func Create(config *Config.Config) *App {
@@ -20,7 +20,7 @@ func Create(config *Config.Config) *App {
 		Config: config,
 		Router: router,
 		Server: &http.Server{
-			Addr: config.Listen,
+			Addr:    config.Listen,
 			Handler: router,
 		},
 		Ch: make(chan int),

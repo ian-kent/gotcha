@@ -1,6 +1,6 @@
 package main
 
-import(
+import (
 	"log"
 	"os"
 	"path/filepath"
@@ -15,13 +15,13 @@ func main() {
 		cmd := os.Args[1]
 		args := os.Args[2:]
 		switch cmd {
-			case "new":
-				if len(args) == 0 {
-					log.Fatalf("Missing application name, e.g. 'gotcha new MyApp'")
-				}
-				new(args[0])
-			default:
-				log.Fatalf("Unrecognised command: %s\n", cmd)
+		case "new":
+			if len(args) == 0 {
+				log.Fatalf("Missing application name, e.g. 'gotcha new MyApp'")
+			}
+			new(args[0])
+		default:
+			log.Fatalf("Unrecognised command: %s\n", cmd)
 		}
 	}
 }

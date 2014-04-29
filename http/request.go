@@ -1,13 +1,13 @@
 package http
 
-import(
+import (
 	nethttp "net/http"
 	neturl "net/url"
 )
 
 type Request struct {
-	req *nethttp.Request
-	URL *neturl.URL
+	req    *nethttp.Request
+	URL    *neturl.URL
 	Method string
 }
 

@@ -1,6 +1,6 @@
 package MIME
 
-import(
+import (
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -8,36 +8,37 @@ import(
 
 var byExtension = map[string][]string{
 	"appcache": []string{"text/cache-manifest"},
-	"atom"    : []string{"application/atom+xml"},
-	"bin"     : []string{"application/octet-stream"},
-	"css"     : []string{"text/css"},
-	"gif"     : []string{"image/gif"},
-	"gz"      : []string{"application/x-gzip"},
-	"htm"     : []string{"text/html"},
-	"html"    : []string{"text/html;charset=UTF-8"},
-	"ico"     : []string{"image/x-icon"},
-	"jpeg"    : []string{"image/jpeg"},
-	"jpg"     : []string{"image/jpeg"},
-	"js"      : []string{"application/javascript"},
-	"json"    : []string{"application/json"},
-	"mp3"     : []string{"audio/mpeg"},
-	"mp4"     : []string{"video/mp4"},
-	"ogg"     : []string{"audio/ogg"},
-	"ogv"     : []string{"video/ogg"},
-	"pdf"     : []string{"application/pdf"},
-	"png"     : []string{"image/png"},
-	"rss"     : []string{"application/rss+xml"},
-	"svg"     : []string{"image/svg+xml"},
-	"txt"     : []string{"text/plain;charset=UTF-8", "text/plain"},
-	"webm"    : []string{"video/webm"},
-	"woff"    : []string{"application/font-woff"},
-	"xml"     : []string{"application/xml","text/xml"},
-	"zip"     : []string{"application/zip"},
-};
+	"atom":     []string{"application/atom+xml"},
+	"bin":      []string{"application/octet-stream"},
+	"css":      []string{"text/css"},
+	"gif":      []string{"image/gif"},
+	"gz":       []string{"application/x-gzip"},
+	"htm":      []string{"text/html"},
+	"html":     []string{"text/html;charset=UTF-8"},
+	"ico":      []string{"image/x-icon"},
+	"jpeg":     []string{"image/jpeg"},
+	"jpg":      []string{"image/jpeg"},
+	"js":       []string{"application/javascript"},
+	"json":     []string{"application/json"},
+	"mp3":      []string{"audio/mpeg"},
+	"mp4":      []string{"video/mp4"},
+	"ogg":      []string{"audio/ogg"},
+	"ogv":      []string{"video/ogg"},
+	"pdf":      []string{"application/pdf"},
+	"png":      []string{"image/png"},
+	"rss":      []string{"application/rss+xml"},
+	"svg":      []string{"image/svg+xml"},
+	"txt":      []string{"text/plain;charset=UTF-8", "text/plain"},
+	"webm":     []string{"video/webm"},
+	"woff":     []string{"application/font-woff"},
+	"xml":      []string{"application/xml", "text/xml"},
+	"zip":      []string{"application/zip"},
+}
 
 // FIXME ordering changes because of map
 
 var byMIMEType = make(map[string][]string, 0)
+
 func ByMIMEType() map[string][]string {
 	if len(byMIMEType) == 0 {
 		for ext, mimes := range byExtension {
@@ -79,13 +80,17 @@ func AddType(mimes []string, extensions []string) {
 
 func TypeFromExtension(extension string) []string {
 	mimes, ok := ByExtension()[extension]
-	if ok { return mimes }
+	if ok {
+		return mimes
+	}
 	return []string{}
 }
 
 func ExtensionFromType(mime string) []string {
 	exts, ok := ByMIMEType()[mime]
-	if ok { return exts }
+	if ok {
+		return exts
+	}
 	return []string{}
 }
 

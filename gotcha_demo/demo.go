@@ -1,16 +1,16 @@
 package main
 
-import(
-	"log"
+import (
 	gotcha "github.com/ian-kent/Go-Gotcha/app"
 	"github.com/ian-kent/Go-Gotcha/config"
 	"github.com/ian-kent/Go-Gotcha/http"
 	"github.com/ian-kent/Go-Gotcha/router"
+	"log"
 )
 
 func main() {
 	var config = Config.Create()
-	config.Listen = ":7050";
+	config.Listen = ":7050"
 
 	var app = gotcha.Create(config)
 

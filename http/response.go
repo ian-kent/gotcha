@@ -1,11 +1,11 @@
 package http
 
-import(
+import (
 	nethttp "net/http"
 )
 
 type Response struct {
-	writer nethttp.ResponseWriter
+	writer  nethttp.ResponseWriter
 	request *Request
 }
 

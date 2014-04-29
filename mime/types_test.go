@@ -1,8 +1,8 @@
 package MIME
 
-import(
-	"testing"
+import (
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestByMIMEType(t *testing.T) {
@@ -62,7 +62,7 @@ func TestTypeFromExtension(t *testing.T) {
 
 func TestExtensionFromType(t *testing.T) {
 	assert.Equal(t, ExtensionFromType("image/gif")[0], "gif")
-	assert.Equal(t, ExtensionFromType("image/jpeg"), []string{"jpeg","jpg"})
+	assert.Equal(t, ExtensionFromType("image/jpeg"), []string{"jpeg", "jpg"})
 	assert.Equal(t, ExtensionFromType("image/x-icon")[0], "ico")
 	assert.Equal(t, ExtensionFromType("unknown/type"), []string{})
 }
