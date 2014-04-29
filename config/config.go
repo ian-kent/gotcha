@@ -5,5 +5,7 @@ type Config struct {
 }
 
 func Create() *Config {
-	return &Config{}
+	return &Config{
+		Listen: ":7050",
+	}
 }

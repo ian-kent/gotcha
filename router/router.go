@@ -16,6 +16,10 @@ type Route struct {
 	Handler HandlerFunc
 }
 
+func Create() *Router {
+    return &Router{}
+}
+
 func (r1 *Route) Equals(r2 *Route) bool {
 	if r1.Path != r2.Path {
 		return false

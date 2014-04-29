@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 )
 
@@ -20,6 +21,18 @@ func main() {
 				log.Fatalf("Missing application name, e.g. 'gotcha new MyApp'")
 			}
 			new(args[0])
+		case "install":
+			if len(args) > 0 {
+				log.Fatalf("No additional arguments required for install: %s", args)
+			}
+			if _, err := os.Stat("Makefile"); os.IsNotExist(err) {
+				log.Fatalf("Current directory doesn't appear to be a Gotcha application", args)
+			}
+			out, err := exec.Command("make").Output()
+			if err != nil {
+				log.Fatalf("Error installing application: %s", err)
+			}
+			log.Printf("Install successful: %s", out)
 		default:
 			log.Fatalf("Unrecognised command: %s\n", cmd)
 		}
@@ -29,44 +42,38 @@ func main() {
 func new(name string) {
 	log.Printf("Creating application: '%s'\n", name)
 
-	err := os.Mkdir(name, 0777)
-	if err != nil {
-		log.Fatalf("Error creating application directory: %s", err)
-	}
-
-	f, err := os.Create(filepath.FromSlash(name + "/main.go"))
-	if err != nil {
-		log.Fatalf("Error creating main.go: %s", err)
-	}
-
-	_, err = f.WriteString(`package main
-
-import(
-	"log"
-	gotcha "github.com/ian-kent/Go-Gotcha/app"
-	"github.com/ian-kent/Go-Gotcha/config"
-	"github.com/ian-kent/Go-Gotcha/http"
-	"github.com/ian-kent/Go-Gotcha/router"
-)
-
-func main() {
-	var config = Config.Create()
-	config.Listen = ":7050";
-
-	var app = gotcha.Create(config)
-
-	router := app.Router
-	router.Get("/", example)
-
-	log.Println("Starting application")
-	app.Start()
-
-	<-app.Ch
+	createDir(name)
+	writeAsset("assets/demo_app/main.go2", name + "/main.go")
+	writeAsset("assets/demo_app/Makefile", name + "/Makefile")
+	writeAsset("assets/demo_app/README.md", name + "/README.md")
+	
+	createDir(name + "/assets/templates")
+	writeAsset("assets/demo_app/assets/templates/index.html", name + "/assets/templates/index.html")
 }
 
-func example(w *http.Response, r *http.Request, route *Router.Route) {
-	w.WriteText("Hello world!")
-}
-`)
+func createDir(dir string) {
+	log.Printf("Creating directory %s", dir)
 
+	err := os.MkdirAll(dir, 0777)
+	if err != nil {
+		log.Fatalf("Error creating directory %s: %s", dir, err)
+	}
+}
+func writeAsset(input string, output string) {
+	log.Printf("Writing asset %s to %s", input, output)
+
+	f, err := os.Create(filepath.FromSlash(output))
+	if err != nil {
+		log.Fatalf("Error creating %s: %s", output, err)
+	}
+
+	bytes, err := Asset(input)
+	if err != nil {
+		log.Fatalf("Error loading asset %s: %s", input, err)
+	}
+
+	_, err = f.Write(bytes)
+	if err != nil {
+		log.Fatalf("Error writing output %s: %s", output, err)
+	}
 }
