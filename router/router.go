@@ -93,10 +93,10 @@ func (h *Router) Static(filename string) HandlerFunc {
 			//log.Printf("Found var: %s; name: %s", m, parts[1])
 			if val, ok := session.Stash[parts[1]]; ok {
 				//log.Printf("Value found in stash for %s: %s", parts[1], val)
-				return val.(string);
+				return val.(string)
 			}
 			log.Printf("No value found in stash for var: %s", parts[1])
-			return m;
+			return m
 		})
 		asset, err := h.Config.AssetLoader(fcopy)
 		if err != nil {

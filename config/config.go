@@ -1,8 +1,8 @@
 package Config
 
-import(
-	"os"
+import (
 	"flag"
+	"os"
 )
 
 type Config struct {
@@ -35,5 +35,7 @@ func (config *Config) flags() {
 	flag.StringVar(&listen, "listen", "", "Interface to listen on, e.g. '0.0.0.0:7050' or ':7050'")
 	flag.Parse()
 
-	if listen != "" { config.Listen = listen }
+	if listen != "" {
+		config.Listen = listen
+	}
 }
