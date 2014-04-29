@@ -77,6 +77,14 @@ Before submitting a pull request:
   * Run ```go fmt ./...```
   * Make sure tests pass: ```make test```
 
+### Roadmap
+
+Without putting too much thought into it:
+
+* Use channels for communication between actions and the router
+* Add nicer routing syntax which translates to a regex
+* Improve 404/500 error output
+
 ### Licence
 
 Copyright ©‎ 2014, Ian Kent (http://www.iankent.eu).
