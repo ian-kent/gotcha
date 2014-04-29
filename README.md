@@ -19,8 +19,9 @@ A(nother) web framework for Go.
   * Produces a single binary file with no dependencies
   * Easy to cross-compile using [gox](https://github.com/mitchellh/gox)
 * Simple request routing
-  * Supports regexes
+  * Supports regexes with named capture groups
   * GET/POST/PUT/PATCH/DELETE/OPTIONS
+  * Static content handler
 * Simple action composition
 * Per-connection data stash
 * Cached template rendering with [html/template](http://golang.org/pkg/html/template)
