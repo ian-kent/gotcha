@@ -59,8 +59,12 @@ It's also got (mostly) nice syntax and awesome concurrency support!
 * Clone this repository: ```git clone https://github.com/ian-kent/gotcha```
 * Run tests: ```make test```
 * Install gotcha: ```make```
+* Stick to the principles!
 
-If you make any changes, run ```go fmt ./...``` before submitting a pull request.
+Before submitting a pull request:
+
+  * Run ```go fmt ./...```
+  * Make sure tests pass: ```make test```
 
 ### Licence
 
