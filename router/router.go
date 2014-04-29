@@ -84,11 +84,26 @@ func (h *Router) Options(pattern string, handler HandlerFunc) {
 
 func (h *Router) Static(filename string) HandlerFunc {
 	return func(session *http.Session, route *Route) {
-		asset, err := h.Config.AssetLoader(filename)
+		// TODO beware of ..?
+		// TODO re-add log lines using log4go
+		re := regexp.MustCompile("{{(\\w+)}}")
+		fcopy := re.ReplaceAllStringFunc(filename, func(m string) string {
+			//log.Printf("Found var: %s", m)
+			parts := re.FindStringSubmatch(m)
+			//log.Printf("Found var: %s; name: %s", m, parts[1])
+			if val, ok := session.Stash[parts[1]]; ok {
+				//log.Printf("Value found in stash for %s: %s", parts[1], val)
+				return val.(string);
+			}
+			log.Printf("No value found in stash for var: %s", parts[1])
+			return m;
+		})
+		asset, err := h.Config.AssetLoader(fcopy)
 		if err != nil {
+			log.Printf("Static file not found: " + fcopy)
 			session.Response.NotFound()
 		} else {
-			m := MIME.TypeFromFilename(filename)
+			m := MIME.TypeFromFilename(fcopy)
 			if len(m) > 0 {
 				session.Response.Headers().Add("Content-Type", m[0])
 			}
@@ -117,9 +132,16 @@ func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Se
 
 func (h *Router) Serve(session *http.Session) {
 	for _, route := range h.routes {
-		if route.Pattern.MatchString(session.Request.URL.Path) {
+		if matches := route.Pattern.FindStringSubmatch(session.Request.URL.Path); len(matches) > 0 {
 			_, ok := route.Methods[session.Request.Method]
 			if ok {
+				for i, named := range route.Pattern.SubexpNames() {
+					if len(named) > 0 {
+						// TODO log4go
+						//log.Printf("Matched named pattern '%s': %s", named, matches[i])
+						session.Stash[named] = matches[i]
+					}
+				}
 				route.Handler.ServeHTTP(session, route)
 				return
 			}
