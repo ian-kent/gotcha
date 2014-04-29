@@ -13,9 +13,23 @@ A(nother) web framework for Go.
 * Run your application: ```MyApp```
 * Open your application in a browser: http://localhost:7050
 
+### Features
+
+* Easy deployment
+  * Produces a single binary file with no dependencies
+  * Easy to cross-compile using [gox](https://github.com/mitchellh/gox)
+* Simple request routing
+  * Supports regexes
+  * GET/POST/PUT/PATCH/DELETE/OPTIONS
+* Simple action composition
+* Per-connection data stash
+* Cached template rendering with [html/template](http://golang.org/pkg/html/template)
+* Embedded assets using [jteeuwen/go-bindata](https://github.com/jteeuwen/go-bindata)
+* Not tied to any design pattern (e.g. MVC, MVP etc)
+
 ### Why another web framework
 
-This is probably best explained as what I'm trying to create:
+This is best explained as what I'm trying to create:
 
 * A platform portable web framework
 * Easy to use, even easier to deploy
