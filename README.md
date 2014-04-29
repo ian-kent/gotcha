@@ -39,7 +39,7 @@ It's also got (mostly) nice syntax and awesome concurrency support!
 * Run tests: ```make test```
 * Install gotcha: ```make```
 
-If you make any changes, run ```go fmt``` before submitting a pull request.
+If you make any changes, run ```go fmt ./...``` before submitting a pull request.
 
 ### Licence
 

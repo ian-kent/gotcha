@@ -1,8 +1,8 @@
 package Router
 
 import (
-	"github.com/ian-kent/Go-Gotcha/http"
-    "github.com/ian-kent/Go-Gotcha/config"
+	"github.com/ian-kent/gotcha/http"
+    "github.com/ian-kent/gotcha/config"
 	"log"
 	nethttp "net/http"
 	"regexp"

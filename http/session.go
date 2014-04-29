@@ -3,7 +3,7 @@ package http
 import (
 	nethttp "net/http"
 	"html/template"
-	"github.com/ian-kent/Go-Gotcha/config"
+	"github.com/ian-kent/gotcha/config"
 	"bytes"
 )
 
@@ -17,6 +17,7 @@ type Session struct {
 func CreateSession(conf *Config.Config, request *nethttp.Request, writer nethttp.ResponseWriter) *Session {
 	session := &Session{
 		Config: conf,
+		Stash: make(map[string]interface{},0),
 	}
 
 	session.Request = CreateRequest(session, request)
@@ -25,7 +26,7 @@ func CreateSession(conf *Config.Config, request *nethttp.Request, writer nethttp
 	return session
 }
 
-func (session *Session) Render(asset string) error {
+func (session *Session) render(asset string) error {
 	asset = "assets/templates/" + asset
 
 	t := template.New(asset)
@@ -36,7 +37,11 @@ func (session *Session) Render(asset string) error {
 
 	t.Parse(string(a))
 	var b bytes.Buffer
-	t.Execute(&b, session.Stash)
+	err = t.Execute(&b, session.Stash)
+	if err != nil {
+		return err
+	}
+
 	_, err = session.Response.Write(b.Bytes())
 
 	if err != nil {
@@ -44,4 +49,17 @@ func (session *Session) Render(asset string) error {
 	}
 
 	return nil
+}
+
+func (session *Session) Render(asset string) {
+	err := session.render(asset)
+	if err != nil {
+		session.RenderException(500, err)
+	}
+}
+
+func (session *Session) RenderException(status int, err error) {
+	session.Response.Status(status)
+	session.Response.Write([]byte("Internal Server Error: "))
+	session.Response.Write([]byte(err.Error()))
 }

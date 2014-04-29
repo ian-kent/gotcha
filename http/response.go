@@ -27,3 +27,7 @@ func (r *Response) Write(bytes []byte) (int,error) {
 func (r *Response) WriteText(text string) {
 	r.writer.Write([]byte(text))
 }
+
+func (r *Response) Status(status int) {
+	r.writer.WriteHeader(status)
+}

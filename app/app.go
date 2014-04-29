@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/ian-kent/Go-Gotcha/config"
-	"github.com/ian-kent/Go-Gotcha/router"
+	"github.com/ian-kent/gotcha/config"
+	"github.com/ian-kent/gotcha/router"
 	"log"
 	"net/http"
 )
