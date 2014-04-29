@@ -53,6 +53,7 @@ It's also got (mostly) nice syntax and awesome concurrency support!
 * If it's too big to fit in memory, it's **TOO BIG**
 * If you want to read assets from disk, use a CDN
 * If you have highly dynamic assets, use a cache/database
+* Configure from your environment, not from file
 
 ### Contributing
 
