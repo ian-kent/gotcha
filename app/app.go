@@ -30,6 +30,11 @@ func (app *App) Start() {
 		Addr:    app.Config.Listen,
 		Handler: app.Router,
 	}
-	go app.Server.ListenAndServe()
-	log.Printf("Listening on %s\n", app.Config.Listen)
+	log.Printf("Starting application on %s\n", app.Config.Listen)
+	go func() {
+		err := app.Server.ListenAndServe()
+		if err != nil {
+			log.Fatalf("Error binding to %s: %s", app.Config.Listen, err)
+		}
+	}()
 }
