@@ -6,12 +6,12 @@ A(nother) web framework for Go.
 ### Getting started
 
 * Make sure your [Go environment](http://golang.org/doc/install) is configured.
-* Download the latest Gotcha release
+* Download the latest [Gotcha release](https://github.com/ian-kent/gotcha/releases)
 * Create a new application: ```gotcha new MyApp```
 * Change to the application directory: ```cd MyApp```
 * Install your application: ```gotcha install```
 * Run your application: ```MyApp```
-* Open your application in a browser: http://localhost:7050
+* Open your application in a browser: (http://localhost:7050)
 
 ### Features
 
