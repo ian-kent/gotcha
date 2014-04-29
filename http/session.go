@@ -1,6 +1,7 @@
 package http
 
 import (
+	"log"
 	nethttp "net/http"
 	"html/template"
 	"github.com/ian-kent/gotcha/config"
@@ -29,22 +30,40 @@ func CreateSession(conf *Config.Config, request *nethttp.Request, writer nethttp
 func (session *Session) render(asset string) error {
 	asset = "assets/templates/" + asset
 
-	t := template.New(asset)
-	a, err := session.Config.AssetLoader(asset)
-	if err != nil {
-		return err
+	var t *template.Template
+
+	c, ok := session.Config.Cache["template:" + asset]
+	if !ok {
+		log.Printf("Parsing template: %s", asset)
+		t = template.New(asset)
+		a, err := session.Config.AssetLoader(asset)
+		if err != nil {
+			log.Printf("Failed loading template %s: %s", asset, err)
+			return err
+		}
+		_, err = t.Parse(string(a))
+		if err != nil {
+			log.Printf("Failed parsing template %s: %s", asset, err)
+			return err
+		}
+		log.Printf("Template parsed successfully: %s", asset)
+		session.Config.Cache["template:" + asset] = t
+	} else {
+		t = c.(*template.Template)
+		log.Printf("Template loaded from cache: %s", asset)
 	}
 
-	t.Parse(string(a))
 	var b bytes.Buffer
-	err = t.Execute(&b, session.Stash)
+	err := t.Execute(&b, session.Stash)
 	if err != nil {
+		log.Printf("Failed executing template %s: %s", asset, err)
 		return err
 	}
 
 	_, err = session.Response.Write(b.Bytes())
 
 	if err != nil {
+		log.Printf("Error writing output for template %s: %s", asset, err)
 		return err
 	}
 

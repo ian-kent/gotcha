@@ -33,6 +33,13 @@ almost no additional work.
 
 It's also got (mostly) nice syntax and awesome concurrency support!
 
+### Principles
+
+* Care more about syntax than implementation!
+* If it's too big to fit in memory, it's **TOO BIG**
+* If you want to read assets from disk, use a CDN
+* If you have highly dynamic assets, use a cache/database
+
 ### Contributing
 
 * Clone this repository: ```git clone https://github.com/ian-kent/gotcha```
