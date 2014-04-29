@@ -33,7 +33,7 @@ almost no additional work.
 
 It's also got (mostly) nice syntax and awesome concurrency support!
 
-### Principles
+### Principles of Gotcha
 
 * Care more about syntax than implementation!
 * If it's too big to fit in memory, it's **TOO BIG**
