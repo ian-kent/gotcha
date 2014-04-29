@@ -7,6 +7,7 @@ import (
 	"log"
 	nethttp "net/http"
 	"regexp"
+	"time"
 )
 
 // http://stackoverflow.com/questions/6564558/wildcards-in-the-pattern-for-http-handlefunc
@@ -130,7 +131,8 @@ func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Se
 	h.routes = append(h.routes, &Route{m, path, pattern, HandlerFunc(handler)})
 }
 
-func (h *Router) Serve(session *http.Session) {
+func (h *Router) Serve(session *http.Session) float64 {
+	tStart := time.Now().UnixNano()
 	for _, route := range h.routes {
 		if matches := route.Pattern.FindStringSubmatch(session.Request.URL.Path); len(matches) > 0 {
 			_, ok := route.Methods[session.Request.Method]
@@ -143,16 +145,17 @@ func (h *Router) Serve(session *http.Session) {
 					}
 				}
 				route.Handler.ServeHTTP(session, route)
-				return
+				return float64(time.Now().UnixNano()-tStart) / 100000
 			}
 		}
 	}
 	// no pattern matched; send 404 response
 	session.Response.NotFound()
+	return float64(time.Now().UnixNano()-tStart) / 100000
 }
 
 func (h *Router) ServeHTTP(w nethttp.ResponseWriter, r *nethttp.Request) {
-	log.Printf("%s %s\n", r.Method, r.URL)
 	session := http.CreateSession(h.Config, r, w)
-	h.Serve(session)
+	ms := h.Serve(session)
+	log.Printf("%s %s (%3.2fms)\n", r.Method, r.URL, ms)
 }
