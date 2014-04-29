@@ -2,6 +2,7 @@ package Router
 
 import (
 	"github.com/ian-kent/Go-Gotcha/http"
+    "github.com/ian-kent/Go-Gotcha/config"
 	"log"
 	nethttp "net/http"
 	"regexp"
@@ -14,10 +15,6 @@ type Route struct {
 	Path    string
 	Pattern *regexp.Regexp
 	Handler HandlerFunc
-}
-
-func Create() *Router {
-    return &Router{}
 }
 
 func (r1 *Route) Equals(r2 *Route) bool {
@@ -39,15 +36,21 @@ func (r1 *Route) Equals(r2 *Route) bool {
 	return true
 }
 
-type HandlerFunc func(*http.Response, *http.Request, *Route)
+type HandlerFunc func(*http.Session, *Route)
 
-//type Handler http.Handler
-func (f HandlerFunc) ServeHTTP(w *http.Response, r *http.Request, route *Route) {
-	f(w, r, route)
+func (f HandlerFunc) ServeHTTP(session *http.Session, route *Route) {
+	f(session, route)
 }
 
 type Router struct {
+    Config *Config.Config
 	routes []*Route
+}
+
+func Create(config *Config.Config) *Router {
+    return &Router{
+        Config: config,
+    }
 }
 
 func (h *Router) Routes() []*Route {
@@ -79,8 +82,8 @@ func (h *Router) Options(pattern string, handler HandlerFunc) {
 }
 
 func Static(filename string) HandlerFunc {
-	return func(w *http.Response, r *http.Request, route *Route) {
-		w.NotFound()
+	return func(session *http.Session, route *Route) {
+		session.Response.NotFound()
 	}
 }
 
@@ -93,7 +96,7 @@ func (h *Router) Handler(methods []string, path string, handler HandlerFunc) {
 	h.routes = append(h.routes, &Route{m, path, pattern, handler})
 }
 
-func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Response, *http.Request, *Route)) {
+func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Session, *Route)) {
 	pattern := regexp.MustCompile("^" + path + "$")
 	m := make(map[string]int, 0)
 	for _, v := range methods {
@@ -102,23 +105,22 @@ func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Re
 	h.routes = append(h.routes, &Route{m, path, pattern, HandlerFunc(handler)})
 }
 
-func (h *Router) Serve(w *http.Response, r *http.Request) {
+func (h *Router) Serve(session *http.Session) {
 	for _, route := range h.routes {
-		if route.Pattern.MatchString(r.URL.Path) {
-			_, ok := route.Methods[r.Method]
+		if route.Pattern.MatchString(session.Request.URL.Path) {
+			_, ok := route.Methods[session.Request.Method]
 			if ok {
-				route.Handler.ServeHTTP(w, r, route)
+				route.Handler.ServeHTTP(session, route)
 				return
 			}
 		}
 	}
 	// no pattern matched; send 404 response
-	w.NotFound()
+	session.Response.NotFound()
 }
 
 func (h *Router) ServeHTTP(w nethttp.ResponseWriter, r *nethttp.Request) {
 	log.Printf("%s %s\n", r.Method, r.URL)
-	req := http.CreateRequest(r)
-	res := http.CreateResponse(req, w)
-	h.Serve(res, req)
+    session := http.CreateSession(h.Config, r, w)
+	h.Serve(session)
 }

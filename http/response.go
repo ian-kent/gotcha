@@ -5,23 +5,23 @@ import (
 )
 
 type Response struct {
+	session *Session
 	writer  nethttp.ResponseWriter
-	request *Request
 }
 
-func CreateResponse(request *Request, writer nethttp.ResponseWriter) *Response {
+func CreateResponse(session *Session, writer nethttp.ResponseWriter) *Response {
 	return &Response{
+		session,
 		writer,
-		request,
 	}
 }
 
 func (r *Response) NotFound() {
-	nethttp.NotFound(r.writer, r.request.Unwrap())
+	nethttp.NotFound(r.writer, r.session.Request.Unwrap())
 }
 
-func (r *Response) Write(bytes []byte) {
-	r.writer.Write(bytes)
+func (r *Response) Write(bytes []byte) (int,error) {
+	return r.writer.Write(bytes)
 }
 
 func (r *Response) WriteText(text string) {

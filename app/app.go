@@ -14,10 +14,12 @@ type App struct {
 	Ch     chan int
 }
 
-func Create() *App {
+func Create(assetLoader func(string)([]byte,error)) *App {
+	config := Config.Create(assetLoader)
+
 	app := &App{
-		Config: Config.Create(),
-		Router: Router.Create(),
+		Config: config,
+		Router: Router.Create(config),
 		Ch: make(chan int),
 	}
 	return app

@@ -26,7 +26,7 @@ func main() {
 				log.Fatalf("No additional arguments required for install: %s", args)
 			}
 			if _, err := os.Stat("Makefile"); os.IsNotExist(err) {
-				log.Fatalf("Current directory doesn't appear to be a Gotcha application", args)
+				log.Fatalf("Current directory doesn't appear to be a Gotcha application")
 			}
 			out, err := exec.Command("make").Output()
 			if err != nil {

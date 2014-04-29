@@ -6,13 +6,15 @@ import (
 )
 
 type Request struct {
+	Session *Session
 	req    *nethttp.Request
 	URL    *neturl.URL
 	Method string
 }
 
-func CreateRequest(request *nethttp.Request) *Request {
+func CreateRequest(session *Session, request *nethttp.Request) *Request {
 	return &Request{
+		session,
 		request,
 		request.URL,
 		request.Method,

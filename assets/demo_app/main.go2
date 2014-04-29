@@ -8,7 +8,7 @@ import(
 )
 
 func main() {
-	var app = gotcha.Create()
+	var app = gotcha.Create(Asset)
 
 	router := app.Router
 	router.Get("/", example)
@@ -19,7 +19,6 @@ func main() {
 	<-app.Ch
 }
 
-func example(w *http.Response, r *http.Request, route *Router.Route) {
-	bytes, _ := Asset("assets/templates/index.html")
-	w.Write(bytes)
+func example(session *http.Session, route *Router.Route) {
+	session.Render("index.html")
 }
