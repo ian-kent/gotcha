@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	nethttp "net/http"
+	neturl "net/url"
 )
 
 type Session struct {
@@ -81,4 +82,8 @@ func (session *Session) RenderException(status int, err error) {
 	session.Response.Status(status)
 	session.Response.Write([]byte("Internal Server Error: "))
 	session.Response.Write([]byte(err.Error()))
+}
+
+func (session *Session) Redirect(url *neturl.URL) {
+	session.Response.Redirect(url, nethttp.StatusFound)
 }

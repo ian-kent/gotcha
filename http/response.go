@@ -2,6 +2,7 @@ package http
 
 import (
 	nethttp "net/http"
+	neturl "net/url"
 )
 
 type Response struct {
@@ -14,6 +15,10 @@ func CreateResponse(session *Session, writer nethttp.ResponseWriter) *Response {
 		session,
 		writer,
 	}
+}
+
+func (r *Response) Unwrap() nethttp.ResponseWriter {
+	return r.writer
 }
 
 func (r *Response) NotFound() {
@@ -34,4 +39,8 @@ func (r *Response) Status(status int) {
 
 func (r *Response) Headers() nethttp.Header {
 	return r.writer.Header()
+}
+
+func (r *Response) Redirect(url *neturl.URL, status int) {
+	nethttp.Redirect(r.writer, r.session.Request.Unwrap(), url.String(), status)
 }

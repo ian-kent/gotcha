@@ -5,6 +5,7 @@ import (
 	"github.com/ian-kent/gotcha/http"
 	"github.com/ian-kent/gotcha/router"
 	"log"
+	"net/url"
 )
 
 func main() {
@@ -17,6 +18,7 @@ func main() {
 	// Create someroutes
 	r.Get("/", example)
 	r.Get("/foo", example2)
+	r.Get("/bar", example3)
 
 	// Serve static content (but really use a CDN)
 	r.Get("/images/(?P<file>.*)", r.Static("assets/images/{{file}}"))
@@ -48,4 +50,8 @@ func example2(session *http.Session, route *Router.Route) {
 	foo(session, route, func(session *http.Session, route *Router.Route) {
 		session.Response.WriteText(session.Stash["foo"].(string))
 	})
+}
+
+func example3(session *http.Session, route *Router.Route) {
+	session.Redirect(&url.URL{Path:"/foo"})
 }
