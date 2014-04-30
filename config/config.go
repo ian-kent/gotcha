@@ -3,12 +3,14 @@ package Config
 import (
 	"flag"
 	"os"
+	"github.com/ian-kent/gotcha/events"
 )
 
 type Config struct {
 	Listen      string
 	AssetLoader func(string) ([]byte, error)
 	Cache       map[string]interface{}
+	Events		chan *events.Event
 }
 
 func Create(assetLoader func(string) ([]byte, error)) *Config {
@@ -16,6 +18,7 @@ func Create(assetLoader func(string) ([]byte, error)) *Config {
 		Listen:      ":7050",
 		AssetLoader: assetLoader,
 		Cache:       make(map[string]interface{}),
+		Events:      make(chan *events.Event),
 	}
 
 	config.env()

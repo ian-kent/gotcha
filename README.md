@@ -83,7 +83,6 @@ Without putting too much thought into it:
 
 * Use channels for communication between actions and the router
 * Add nicer routing syntax which translates to a regex
-* Improve 404/500 error output
 * Write some tests
 * Switch to using log4go
 

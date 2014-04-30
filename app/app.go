@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/ian-kent/gotcha/config"
 	"github.com/ian-kent/gotcha/router"
+	"github.com/ian-kent/gotcha/events"
 	"log"
 	"net/http"
 )
@@ -11,7 +12,7 @@ type App struct {
 	Config *Config.Config
 	Router *Router.Router
 	Server *http.Server
-	Ch     chan int
+	Events chan *events.Event
 }
 
 func Create(assetLoader func(string) ([]byte, error)) *App {
@@ -20,7 +21,7 @@ func Create(assetLoader func(string) ([]byte, error)) *App {
 	app := &App{
 		Config: config,
 		Router: Router.Create(config),
-		Ch:     make(chan int),
+		Events: config.Events,
 	}
 	return app
 }

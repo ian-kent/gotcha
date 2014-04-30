@@ -2,6 +2,7 @@ package main
 
 import (
 	gotcha "github.com/ian-kent/gotcha/app"
+	"github.com/ian-kent/gotcha/events"
 	"github.com/ian-kent/gotcha/http"
 	"github.com/ian-kent/gotcha/router"
 	"log"
@@ -29,8 +30,15 @@ func main() {
 	log.Println("Starting application")
 	app.Start()
 
-	// Wait for a signal from Gotcha to exit
-	<-app.Ch
+	for {
+		select {
+			case e := <- app.Events:
+				switch e.Event {
+					case events.AfterHandler:
+						log.Println("Got AfterHandler event!")
+				}	
+		}
+	}
 }
 
 func example(session *http.Session) {

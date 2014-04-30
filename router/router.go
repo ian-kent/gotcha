@@ -4,6 +4,7 @@ import (
 	"github.com/ian-kent/gotcha/config"
 	"github.com/ian-kent/gotcha/http"
 	"github.com/ian-kent/gotcha/mime"
+	"github.com/ian-kent/gotcha/events"
 	"github.com/ian-kent/gotcha/router/route"
 	"log"
 	nethttp "net/http"
@@ -124,6 +125,7 @@ func (h *Router) Serve(session *http.Session) (t float64) {
 						t = float64(time.Now().UnixNano()-tStart) / 100000
 					}
 				}()
+				h.Config.Events <- &events.Event{events.AfterHandler}
 				handler.ServeHTTP(session)
 				return float64(time.Now().UnixNano()-tStart) / 100000
 			}
