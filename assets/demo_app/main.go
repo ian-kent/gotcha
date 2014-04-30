@@ -19,6 +19,7 @@ func main() {
 	r.Get("/", example)
 	r.Get("/foo", example2)
 	r.Get("/bar", example3)
+	r.Get("/err", err)
 
 	// Serve static content (but really use a CDN)
 	r.Get("/images/(?P<file>.*)", r.Static("assets/images/{{file}}"))
@@ -55,3 +56,8 @@ func example2(session *http.Session) {
 func example3(session *http.Session) {
 	session.Redirect(&url.URL{Path:"/foo"})
 }
+
+func err(session *http.Session) {
+	panic("Arrggghh")
+}
+

@@ -6,6 +6,7 @@ import (
 	"github.com/ian-kent/gotcha/router/route"
 	"html/template"
 	"log"
+	"code.google.com/p/go-uuid/uuid"
 	nethttp "net/http"
 	neturl "net/url"
 )
@@ -23,6 +24,9 @@ func CreateSession(conf *Config.Config, request *nethttp.Request, writer nethttp
 		Config: conf,
 		Stash:  make(map[string]interface{}, 0),
 	}
+
+	// Somewhere to store internal stuff
+	session.Stash["Gotcha"] = make(map[string]interface{}, 0)
 
 	session.Request = CreateRequest(session, request)
 	session.Response = CreateResponse(session, writer)
@@ -81,11 +85,16 @@ func (session *Session) Render(asset string) {
 }
 
 func (session *Session) RenderException(status int, err error) {
+	key := uuid.NewUUID().String()
 	session.Response.Status(status)
-	session.Stash["Error"] = err.Error()
+	session.Stash["Gotcha"].(map[string]interface{})["Error"] = err.Error()
+	session.Stash["Gotcha"].(map[string]interface{})["ErrorId"] = key
+	log.Printf("Exception %s: %s", key, err.Error())
+
 	e := session.render("error.html")
 	if e != nil {
-		session.Response.Write([]byte("Internal Server Error: "))
+		log.Printf("Error rendering error page: %s", e)
+		session.Response.Write([]byte("[" + key + "] Internal Server Error: "))
 		session.Response.Write([]byte(err.Error()))
 	}
 }

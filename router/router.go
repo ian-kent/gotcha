@@ -9,6 +9,7 @@ import (
 	nethttp "net/http"
 	"regexp"
 	"time"
+	"errors"
 )
 
 // http://stackoverflow.com/questions/6564558/wildcards-in-the-pattern-for-http-handlefunc
@@ -103,7 +104,7 @@ func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Se
 	h.Routes[&route.Route{m, path, pattern}] = HandlerFunc(handler)
 }
 
-func (h *Router) Serve(session *http.Session) float64 {
+func (h *Router) Serve(session *http.Session) (t float64) {
 	tStart := time.Now().UnixNano()
 	for route, handler := range h.Routes {
 		if matches := route.Pattern.FindStringSubmatch(session.Request.URL.Path); len(matches) > 0 {
@@ -117,6 +118,12 @@ func (h *Router) Serve(session *http.Session) float64 {
 					}
 				}
 				session.Route = route
+				defer func() {
+					if e := recover(); e != nil {
+						session.RenderException(500, errors.New(e.(string)))
+						t = float64(time.Now().UnixNano()-tStart) / 100000
+					}
+				}()
 				handler.ServeHTTP(session)
 				return float64(time.Now().UnixNano()-tStart) / 100000
 			}

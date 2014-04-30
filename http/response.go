@@ -16,11 +16,8 @@ func CreateResponse(session *Session, writer nethttp.ResponseWriter) *Response {
 	return &Response{
 		session: session,
 		writer: writer,
+		code: 200,
 	}
-}
-
-func (r *Response) Unwrap() nethttp.ResponseWriter {
-	return r.writer
 }
 
 func (r *Response) NotFound() {
@@ -46,8 +43,8 @@ func (r *Response) Headers() nethttp.Header {
 }
 
 func (r *Response) Redirect(url *neturl.URL, status int) {
-	r.code = status
-	nethttp.Redirect(r.writer, r.session.Request.Unwrap(), url.String(), status)
+	r.Headers().Set("Location", url.String())
+	r.Status(status)
 }
 
 func (r *Response) Code() int {

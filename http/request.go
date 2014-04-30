@@ -20,8 +20,3 @@ func CreateRequest(session *Session, request *nethttp.Request) *Request {
 		request.Method,
 	}
 }
-
-// FIXME
-func (r *Request) Unwrap() *nethttp.Request {
-	return r.req
-}
