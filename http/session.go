@@ -9,6 +9,8 @@ import (
 	"code.google.com/p/go-uuid/uuid"
 	nethttp "net/http"
 	neturl "net/url"
+	"runtime"
+	"fmt"
 )
 
 type Session struct {
@@ -84,12 +86,28 @@ func (session *Session) Render(asset string) {
 	}
 }
 
+func (session *Session) RenderNotFound() {
+	session.Stash["Gotcha"].(map[string]interface{})["Error"] = "Not found"
+	session.Response.Status(404)
+	
+	e := session.render("notfound.html")
+	if e != nil {
+		log.Printf("Error rendering not found page: %s", e)
+		session.RenderException(500, e)
+	}
+}
+
 func (session *Session) RenderException(status int, err error) {
 	key := uuid.NewUUID().String()
 	session.Response.Status(status)
 	session.Stash["Gotcha"].(map[string]interface{})["Error"] = err.Error()
 	session.Stash["Gotcha"].(map[string]interface{})["ErrorId"] = key
-	log.Printf("Exception %s: %s", key, err.Error())
+
+	buf := make([]byte, 1<<16)
+	n := runtime.Stack(buf, true)
+	session.Stash["Gotcha"].(map[string]interface{})["Stack"] = fmt.Sprintf("%s", buf[:n])
+
+	log.Printf("Exception %s: %s\n%s", key, err.Error(), session.Stash["Gotcha"].(map[string]interface{})["Stack"])
 
 	e := session.render("error.html")
 	if e != nil {

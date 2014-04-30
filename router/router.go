@@ -75,7 +75,7 @@ func (h *Router) Static(filename string) HandlerFunc {
 		asset, err := h.Config.AssetLoader(fcopy)
 		if err != nil {
 			log.Printf("Static file not found: " + fcopy)
-			session.Response.NotFound()
+			session.RenderNotFound()
 		} else {
 			m := MIME.TypeFromFilename(fcopy)
 			if len(m) > 0 {
@@ -130,7 +130,7 @@ func (h *Router) Serve(session *http.Session) (t float64) {
 		}
 	}
 	// no pattern matched; send 404 response
-	session.Response.NotFound()
+	session.RenderNotFound()
 	return float64(time.Now().UnixNano()-tStart) / 100000
 }
 

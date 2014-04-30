@@ -3,7 +3,6 @@ package http
 import (
 	nethttp "net/http"
 	neturl "net/url"
-	"errors"
 )
 
 type Response struct {
@@ -18,11 +17,6 @@ func CreateResponse(session *Session, writer nethttp.ResponseWriter) *Response {
 		writer: writer,
 		code: 200,
 	}
-}
-
-func (r *Response) NotFound() {
-	r.code = 404
-	r.session.RenderException(404, errors.New("Page not found"))
 }
 
 func (r *Response) Write(bytes []byte) (int, error) {
