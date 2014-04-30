@@ -3,6 +3,7 @@ package http
 import (
 	"bytes"
 	"github.com/ian-kent/gotcha/config"
+	"github.com/ian-kent/gotcha/router/route"
 	"html/template"
 	"log"
 	nethttp "net/http"
@@ -11,6 +12,7 @@ import (
 
 type Session struct {
 	Config   *Config.Config
+	Route    *route.Route
 	Request  *Request
 	Response *Response
 	Stash    map[string]interface{}
@@ -80,8 +82,12 @@ func (session *Session) Render(asset string) {
 
 func (session *Session) RenderException(status int, err error) {
 	session.Response.Status(status)
-	session.Response.Write([]byte("Internal Server Error: "))
-	session.Response.Write([]byte(err.Error()))
+	session.Stash["Error"] = err.Error()
+	e := session.render("error.html")
+	if e != nil {
+		session.Response.Write([]byte("Internal Server Error: "))
+		session.Response.Write([]byte(err.Error()))
+	}
 }
 
 func (session *Session) Redirect(url *neturl.URL) {

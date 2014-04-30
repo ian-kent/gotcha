@@ -32,26 +32,26 @@ func main() {
 	<-app.Ch
 }
 
-func example(session *http.Session, route *Router.Route) {
+func example(session *http.Session) {
 	// Stash a value and render a template
 	session.Stash["Title"] = "Welcome to Gotcha"
 	session.Render("index.html")
 }
 
 // An action to wrap other actions
-func foo(session *http.Session, route *Router.Route, f Router.HandlerFunc) {
+func foo(session *http.Session, f Router.HandlerFunc) {
 	session.Stash["foo"] = "bar"
 	// Call the nested action
-	f(session, route)
+	f(session)
 }
 
-func example2(session *http.Session, route *Router.Route) {
+func example2(session *http.Session) {
 	// Action composition, pass the first action another action
-	foo(session, route, func(session *http.Session, route *Router.Route) {
+	foo(session, func(session *http.Session) {
 		session.Response.WriteText(session.Stash["foo"].(string))
 	})
 }
 
-func example3(session *http.Session, route *Router.Route) {
+func example3(session *http.Session) {
 	session.Redirect(&url.URL{Path:"/foo"})
 }
