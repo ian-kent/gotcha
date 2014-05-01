@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Gotcha - error</title>
+		<link rel="stylesheet" href="/css/default.css">
+	</head>
+	<body>
+		<header class="center">
+			<h1>We're sorry, we haven't <img src="/images/logo-ish.png" title="Gotcha"></h1>
+		</header>
+		<section>
+			<h1>{{.Gotcha.Error}}</h1>
+		</section>
+		<article>
+			<h2>Exception {{.Gotcha.ErrorId}}</h2>
+			<pre>{{.Gotcha.Stack}}</pre>
+		</article>
+	</body>
+</html>

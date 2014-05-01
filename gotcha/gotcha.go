@@ -45,18 +45,18 @@ func new(name string) {
 	// TODO clean this up
 	
 	createDir(name)
-	writeAsset("assets/demo_app/main.go", name+"/main.go")
-	writeAsset("assets/demo_app/Makefile", name+"/Makefile")
-	writeAsset("assets/demo_app/README.md", name+"/README.md")
+	writeAsset("assets/new_app/main.go", name+"/main.go")
+	writeAsset("assets/new_app/Makefile", name+"/Makefile")
+	writeAsset("assets/new_app/README.md", name+"/README.md")
 
 	createDir(name + "/assets/templates")
-	writeAsset("assets/demo_app/assets/templates/index.html", name+"/assets/templates/index.html")
-	writeAsset("assets/demo_app/assets/templates/error.html", name+"/assets/templates/error.html")
-	writeAsset("assets/demo_app/assets/templates/notfound.html", name+"/assets/templates/notfound.html")
+	writeAsset("assets/new_app/assets/templates/index.html", name+"/assets/templates/index.html")
+	writeAsset("assets/new_app/assets/templates/error.html", name+"/assets/templates/error.html")
+	writeAsset("assets/new_app/assets/templates/notfound.html", name+"/assets/templates/notfound.html")
 	createDir(name + "/assets/images")
-	writeAsset("assets/demo_app/assets/images/logo-ish.png", name+"/assets/images/logo-ish.png")
+	writeAsset("assets/new_app/assets/images/logo-ish.png", name+"/assets/images/logo-ish.png")
 	createDir(name + "/assets/css")
-	writeAsset("assets/demo_app/assets/css/default.css", name+"/assets/css/default.css")
+	writeAsset("assets/new_app/assets/css/default.css", name+"/assets/css/default.css")
 }
 
 func createDir(dir string) {

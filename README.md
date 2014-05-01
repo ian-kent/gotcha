@@ -55,6 +55,8 @@ It's also got (mostly) nice syntax and awesome concurrency support!
 * If you want to read assets from disk, use a CDN
 * If you have highly dynamic assets, use a cache/database
 * Configure from your environment, not from file
+* Re-use core Go libraries wherever possible
+* Try to avoid using external dependencies
 
 ### Contributing
 

@@ -88,7 +88,7 @@ func (session *Session) Render(asset string) {
 
 func (session *Session) RenderNotFound() {
 	session.Stash["Gotcha"].(map[string]interface{})["Error"] = "Not found"
-	session.Response.Status(404)
+	session.Response.Status = 404
 	
 	e := session.render("notfound.html")
 	if e != nil {
@@ -99,7 +99,7 @@ func (session *Session) RenderNotFound() {
 
 func (session *Session) RenderException(status int, err error) {
 	key := uuid.NewUUID().String()
-	session.Response.Status(status)
+	session.Response.Status = status
 	session.Stash["Gotcha"].(map[string]interface{})["Error"] = err.Error()
 	session.Stash["Gotcha"].(map[string]interface{})["ErrorId"] = key
 

@@ -80,7 +80,7 @@ func (h *Router) Static(filename string) HandlerFunc {
 		} else {
 			m := MIME.TypeFromFilename(fcopy)
 			if len(m) > 0 {
-				session.Response.Headers().Add("Content-Type", m[0])
+				session.Response.Headers.Add("Content-Type", m[0])
 			}
 			session.Response.Write(asset)
 		}
@@ -105,8 +105,7 @@ func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Se
 	h.Routes[&route.Route{m, path, pattern}] = HandlerFunc(handler)
 }
 
-func (h *Router) Serve(session *http.Session) (t float64) {
-	tStart := time.Now().UnixNano()
+func (h *Router) Serve(session *http.Session) {	
 	for route, handler := range h.Routes {
 		if matches := route.Pattern.FindStringSubmatch(session.Request.URL.Path); len(matches) > 0 {
 			_, ok := route.Methods[session.Request.Method]
@@ -121,23 +120,39 @@ func (h *Router) Serve(session *http.Session) (t float64) {
 				session.Route = route
 				defer func() {
 					if e := recover(); e != nil {
-						session.RenderException(500, errors.New(e.(string)))
-						t = float64(time.Now().UnixNano()-tStart) / 100000
+						switch e.(type) {
+						case string:
+							session.RenderException(500, errors.New(e.(string)))
+						default:
+							session.RenderException(500, e.(error))
+						}
+						session.Response.Send()
 					}
 				}()
-				h.Config.Events <- &events.Event{events.AfterHandler}
-				handler.ServeHTTP(session)
-				return float64(time.Now().UnixNano()-tStart) / 100000
+				// FIXME func() is passed directly to all events,
+				// so may get called multiple times :/
+				h.Config.Events.Emit(session, events.BeforeHandler, func() {
+					handler.ServeHTTP(session)
+					h.Config.Events.Emit(session, events.AfterHandler, func() {
+						session.Response.Send()
+					})
+				})
+				return;
 			}
 		}
 	}
 	// no pattern matched; send 404 response
 	session.RenderNotFound()
-	return float64(time.Now().UnixNano()-tStart) / 100000
+	session.Response.Send()
 }
 
 func (h *Router) ServeHTTP(w nethttp.ResponseWriter, r *nethttp.Request) {
 	session := http.CreateSession(h.Config, r, w)
-	ms := h.Serve(session)
-	log.Printf("%s %s (%3.2fms) (%d)\n", r.Method, r.URL, ms, session.Response.Code())
+	tStart := time.Now().UnixNano()
+
+	h.Serve(session)
+	
+	t := float64(time.Now().UnixNano()-tStart) / 100000 // ms
+	log.Printf("%s %s (%3.2fms) (%d)\n", r.Method, r.URL, t, session.Response.Status)
+	h.Config.Events.Emit(session, events.AfterResponse, func() {})
 }

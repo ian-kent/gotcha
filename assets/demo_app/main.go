@@ -7,6 +7,8 @@ import (
 	"github.com/ian-kent/gotcha/router"
 	"log"
 	"net/url"
+	"strconv"
+	nethttp "net/http"
 )
 
 func main() {
@@ -26,19 +28,37 @@ func main() {
 	r.Get("/images/(?P<file>.*)", r.Static("assets/images/{{file}}"))
 	r.Get("/css/(?P<file>.*)", r.Static("assets/css/{{file}}"))
 
+	// Listen to some events
+	app.On(events.BeforeHandler, func(session *http.Session, next func()) {
+		n := 0
+		c, ok := session.Request.Cookies["test"]
+		if ok {
+			n, _ = strconv.Atoi(c.Value)
+		}
+		session.Stash["test"] = n
+		log.Printf("Got BeforeHandler event! n = %d", n)
+		next()
+	})
+	app.On(events.AfterHandler, func(session *http.Session, next func()) {
+		n := session.Stash["test"].(int) + 1
+		session.Response.Cookies.Set(&nethttp.Cookie{
+			Name: "test",
+			Value: strconv.Itoa(n),
+		})
+		log.Println("Got AfterHandler event!")
+		next()
+	})
+	app.On(events.AfterResponse, func(session *http.Session, next func()) {
+		log.Println("Got AfterResponse event!")
+		next()
+	})
+
 	// Start our application
 	log.Println("Starting application")
 	app.Start()
 
-	for {
-		select {
-			case e := <- app.Events:
-				switch e.Event {
-					case events.AfterHandler:
-						log.Println("Got AfterHandler event!")
-				}	
-		}
-	}
+	c := make(chan int)
+	<- c
 }
 
 func example(session *http.Session) {

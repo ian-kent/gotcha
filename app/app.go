@@ -3,16 +3,15 @@ package app
 import (
 	"github.com/ian-kent/gotcha/config"
 	"github.com/ian-kent/gotcha/router"
-	"github.com/ian-kent/gotcha/events"
+	"github.com/ian-kent/gotcha/http"
 	"log"
-	"net/http"
+	nethttp "net/http"
 )
 
 type App struct {
 	Config *Config.Config
 	Router *Router.Router
-	Server *http.Server
-	Events chan *events.Event
+	Server *nethttp.Server
 }
 
 func Create(assetLoader func(string) ([]byte, error)) *App {
@@ -21,13 +20,12 @@ func Create(assetLoader func(string) ([]byte, error)) *App {
 	app := &App{
 		Config: config,
 		Router: Router.Create(config),
-		Events: config.Events,
 	}
 	return app
 }
 
 func (app *App) Start() {
-	app.Server = &http.Server{
+	app.Server = &nethttp.Server{
 		Addr:    app.Config.Listen,
 		Handler: app.Router,
 	}
@@ -38,4 +36,10 @@ func (app *App) Start() {
 			log.Fatalf("Error binding to %s: %s", app.Config.Listen, err)
 		}
 	}()
+}
+
+func (app *App) On(event int, handler func(*http.Session, func())) {
+	app.Config.Events.On(event, func(s interface{}, next func()) {
+		handler(s.(*http.Session), next)
+	})
 }
