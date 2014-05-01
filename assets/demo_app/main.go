@@ -4,7 +4,7 @@ import (
 	gotcha "github.com/ian-kent/gotcha/app"
 	"github.com/ian-kent/gotcha/events"
 	"github.com/ian-kent/gotcha/http"
-	"github.com/ian-kent/gotcha/router"
+	"github.com/ian-kent/gotcha/assets/demo_app/wrappers"
 	"log"
 	"net/url"
 	"strconv"
@@ -67,16 +67,9 @@ func example(session *http.Session) {
 	session.Render("index.html")
 }
 
-// An action to wrap other actions
-func foo(session *http.Session, f Router.HandlerFunc) {
-	session.Stash["foo"] = "bar"
-	// Call the nested action
-	f(session)
-}
-
 func example2(session *http.Session) {
 	// Action composition, pass the first action another action
-	foo(session, func(session *http.Session) {
+	wrappers.Foo(session, func(session *http.Session) {
 		session.Response.WriteText(session.Stash["foo"].(string))
 	})
 }
