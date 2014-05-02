@@ -5,7 +5,7 @@ import (
 	"github.com/ian-kent/gotcha/events"
 	"github.com/ian-kent/gotcha/http"
 	"github.com/ian-kent/gotcha/assets/demo_app/wrappers"
-	"log"
+	"github.com/ian-kent/go-log/log"
 	"net/url"
 	"strconv"
 	nethttp "net/http"

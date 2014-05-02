@@ -5,7 +5,7 @@ import (
 	"github.com/ian-kent/gotcha/config"
 	"github.com/ian-kent/gotcha/router/route"
 	"html/template"
-	"log"
+	"github.com/ian-kent/go-log/log"
 	"code.google.com/p/go-uuid/uuid"
 	nethttp "net/http"
 	neturl "net/url"

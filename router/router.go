@@ -6,7 +6,7 @@ import (
 	"github.com/ian-kent/gotcha/mime"
 	"github.com/ian-kent/gotcha/events"
 	"github.com/ian-kent/gotcha/router/route"
-	"log"
+	"github.com/ian-kent/go-log/log"
 	nethttp "net/http"
 	"regexp"
 	"time"
@@ -153,6 +153,6 @@ func (h *Router) ServeHTTP(w nethttp.ResponseWriter, r *nethttp.Request) {
 	h.Serve(session)
 	
 	t := float64(time.Now().UnixNano()-tStart) / 100000 // ms
-	log.Printf("%s %s (%3.2fms) (%d)\n", r.Method, r.URL, t, session.Response.Status)
+	log.Printf("%s %s (%3.2fms) (%d)", r.Method, r.URL, t, session.Response.Status)
 	h.Config.Events.Emit(session, events.AfterResponse, func() {})
 }

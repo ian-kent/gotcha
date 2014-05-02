@@ -83,10 +83,8 @@ Before submitting a pull request:
 
 Without putting too much thought into it:
 
-* Use channels for communication between actions and the router
 * Add nicer routing syntax which translates to a regex
 * Write some tests
-* Switch to using log4go
 
 ### Licence
 

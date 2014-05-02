@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"github.com/ian-kent/go-log/log"
 	"os"
 	"os/exec"
 	"path/filepath"

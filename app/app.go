@@ -4,7 +4,7 @@ import (
 	"github.com/ian-kent/gotcha/config"
 	"github.com/ian-kent/gotcha/router"
 	"github.com/ian-kent/gotcha/http"
-	"log"
+	"github.com/ian-kent/go-log/log"
 	nethttp "net/http"
 )
 
@@ -29,7 +29,7 @@ func (app *App) Start() {
 		Addr:    app.Config.Listen,
 		Handler: app.Router,
 	}
-	log.Printf("Starting application on %s\n", app.Config.Listen)
+	log.Printf("Starting application on %s", app.Config.Listen)
 	go func() {
 		err := app.Server.ListenAndServe()
 		if err != nil {

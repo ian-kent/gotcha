@@ -3,7 +3,7 @@ package main
 import (
 	gotcha "github.com/ian-kent/gotcha/app"
 	"github.com/ian-kent/gotcha/http"
-	"log"
+	"github.com/ian-kent/go-log/log"
 )
 
 func main() {
