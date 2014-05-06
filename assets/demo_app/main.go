@@ -6,6 +6,7 @@ import (
 	"github.com/ian-kent/gotcha/http"
 	"github.com/ian-kent/gotcha/assets/demo_app/wrappers"
 	"github.com/ian-kent/go-log/log"
+	"github.com/ian-kent/go-log/layout"
 	"net/url"
 	"strconv"
 	nethttp "net/http"
@@ -14,6 +15,9 @@ import (
 func main() {
 	// Create our Gotcha application
 	var app = gotcha.Create(Asset)
+
+	// Set the logger output pattern
+	log.Logger().Appender().SetLayout(layout.Pattern("[%d] [%p] %m"))
 
 	// Get the router
 	r := app.Router
