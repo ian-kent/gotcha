@@ -30,23 +30,14 @@ A(nother) web framework for Go.
 
 ### Why another web framework
 
-This is best explained as what I'm trying to create:
+Deploying web applications is difficult. Almost every language has
+some kind of dependency which needs installation.
+
+Go makes it easy. And Gotcha makes it better:
 
 * A platform portable web framework
 * Easy to use, even easier to deploy
 * Installation-free, suitable for cloud environments
-* A friendly community willing to support each other
-
-Every web framework I've used has failed on at least one of those.
-
-This is my attempt at fixing it!
-
-### Why Go?
-
-It's portable. That makes the first point easy to achieve with
-almost no additional work.
-
-It's also got (mostly) nice syntax and awesome concurrency support!
 
 ### Principles of Gotcha
 
