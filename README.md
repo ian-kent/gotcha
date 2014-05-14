@@ -76,6 +76,7 @@ Without putting too much thought into it:
 
 * Add nicer routing syntax which translates to a regex
 * Write some tests
+* Support streaming/chunked data using channels
 
 ### Licence
 
