@@ -87,7 +87,7 @@ func (r *Response) Send() {
 
 	for k, v := range r.Headers {
 		for _, h := range v {
-			log.Trace("[TRACE] Adding header [%s]: [%s]", k, h)
+			log.Trace("Adding header [%s]: [%s]", k, h)
 			r.writer.Header().Add(k, h)
 		}
 	}
