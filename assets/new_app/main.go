@@ -14,7 +14,7 @@ func main() {
 	r := app.Router
 
 	// Create some routes
-	r.Get("/", example)
+	r.Get("/", welcome)
 
 	// Serve static content (but really use a CDN)
 	r.Get("/images/(?P<file>.*)", r.Static("assets/images/{{file}}"))
@@ -27,7 +27,7 @@ func main() {
 	<-make(chan int)
 }
 
-func example(session *http.Session) {
+func welcome(session *http.Session) {
 	// Stash a value and render a template
 	session.Stash["Title"] = "Welcome to Gotcha"
 	session.Render("index.html")
