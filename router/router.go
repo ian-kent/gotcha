@@ -131,9 +131,8 @@ func (h *Router) Serve(session *http.Session) {
 						session.Response.Send()
 					}
 				}()
-				// FIXME func() is passed directly to all events,
-				// so may get called multiple times :/
-				h.Config.Events.Emit(session, events.BeforeHandler, func() {
+				// func() will be executed only if *all* event handlers call next()
+				emitted := h.Config.Events.Emit(session, events.BeforeHandler, func() {
 					handler.ServeHTTP(session)
 					h.Config.Events.Emit(session, events.AfterHandler, func() {
 						session.Response.Send()
