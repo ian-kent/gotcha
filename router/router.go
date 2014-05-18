@@ -86,8 +86,12 @@ func (h *Router) Static(filename string) HandlerFunc {
 	}
 }
 
+func PatternToRegex(pattern string) *regexp.Regexp {
+	return regexp.MustCompile("^" + pattern + "$")
+}
+
 func (h *Router) Handler(methods []string, path string, handler HandlerFunc) {
-	pattern := regexp.MustCompile("^" + path + "$")
+	pattern := PatternToRegex(path)
 	m := make(map[string]int, 0)
 	for _, v := range methods {
 		m[v] = 1
@@ -96,7 +100,7 @@ func (h *Router) Handler(methods []string, path string, handler HandlerFunc) {
 }
 
 func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Session)) {
-	pattern := regexp.MustCompile("^" + path + "$")
+	pattern := PatternToRegex(path)
 	m := make(map[string]int, 0)
 	for _, v := range methods {
 		m[v] = 1

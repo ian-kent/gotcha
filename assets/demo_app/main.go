@@ -62,11 +62,9 @@ func main() {
 	})
 
 	// Start our application
-	log.Println("Starting application")
 	app.Start()
 
-	c := make(chan int)
-	<-c
+	<-make(chan int)
 }
 
 func example(session *http.Session) {

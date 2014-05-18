@@ -24,7 +24,6 @@ func main() {
 	log.Println("Starting application")
 	app.Start()
 
-	// FIXME
 	<-make(chan int)
 }
 
