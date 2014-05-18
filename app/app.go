@@ -24,7 +24,7 @@ func Create(assetLoader func(string) ([]byte, error)) *App {
 	return app
 }
 
-func (app *App) Start() {
+func (app *App) Start() *App {
 	app.Server = &nethttp.Server{
 		Addr:    app.Config.Listen,
 		Handler: app.Router,
@@ -36,10 +36,17 @@ func (app *App) Start() {
 			log.Fatalf("Error binding to %s: %s", app.Config.Listen, err)
 		}
 	}()
+	return app
 }
 
-func (app *App) On(event int, handler func(*http.Session, func())) {
+func (app *App) Block() *App {
+	<-make(chan int)
+	return app
+}
+
+func (app *App) On(event int, handler func(*http.Session, func())) *App {
 	app.Config.Events.On(event, func(s interface{}, next func()) {
 		handler(s.(*http.Session), next)
 	})
+	return app
 }

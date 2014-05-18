@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/ian-kent/go-log/log"
 	gotcha "github.com/ian-kent/gotcha/app"
 	"github.com/ian-kent/gotcha/http"
 )
@@ -21,7 +20,6 @@ func main() {
 	r.Get("/css/(?P<file>.*)", r.Static("assets/css/{{file}}"))
 
 	// Start our application
-	log.Println("Starting application")
 	app.Start()
 
 	<-make(chan int)

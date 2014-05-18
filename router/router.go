@@ -33,28 +33,34 @@ func Create(config *Config.Config) *Router {
 	}
 }
 
-func (h *Router) Get(pattern string, handler HandlerFunc) {
+func (h *Router) Get(pattern string, handler HandlerFunc) *Router {
 	h.Handler([]string{"GET"}, pattern, handler)
+	return h
 }
 
-func (h *Router) Post(pattern string, handler HandlerFunc) {
+func (h *Router) Post(pattern string, handler HandlerFunc) *Router {
 	h.Handler([]string{"POST"}, pattern, handler)
+	return h
 }
 
-func (h *Router) Put(pattern string, handler HandlerFunc) {
+func (h *Router) Put(pattern string, handler HandlerFunc) *Router {
 	h.Handler([]string{"PUT"}, pattern, handler)
+	return h
 }
 
-func (h *Router) Delete(pattern string, handler HandlerFunc) {
+func (h *Router) Delete(pattern string, handler HandlerFunc) *Router {
 	h.Handler([]string{"DELETE"}, pattern, handler)
+	return h
 }
 
-func (h *Router) Patch(pattern string, handler HandlerFunc) {
+func (h *Router) Patch(pattern string, handler HandlerFunc) *Router {
 	h.Handler([]string{"PATCH"}, pattern, handler)
+	return h
 }
 
-func (h *Router) Options(pattern string, handler HandlerFunc) {
+func (h *Router) Options(pattern string, handler HandlerFunc) *Router {
 	h.Handler([]string{"OPTIONS"}, pattern, handler)
+	return h
 }
 
 func (h *Router) Static(filename string) HandlerFunc {
@@ -90,22 +96,24 @@ func PatternToRegex(pattern string) *regexp.Regexp {
 	return regexp.MustCompile("^" + pattern + "$")
 }
 
-func (h *Router) Handler(methods []string, path string, handler HandlerFunc) {
+func (h *Router) Handler(methods []string, path string, handler HandlerFunc) *Router {
 	pattern := PatternToRegex(path)
 	m := make(map[string]int, 0)
 	for _, v := range methods {
 		m[v] = 1
 	}
 	h.Routes[&route.Route{m, path, pattern}] = handler
+	return h
 }
 
-func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Session)) {
+func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Session)) *Router {
 	pattern := PatternToRegex(path)
 	m := make(map[string]int, 0)
 	for _, v := range methods {
 		m[v] = 1
 	}
 	h.Routes[&route.Route{m, path, pattern}] = HandlerFunc(handler)
+	return h
 }
 
 func (h *Router) Serve(session *http.Session) {
@@ -132,7 +140,7 @@ func (h *Router) Serve(session *http.Session) {
 					}
 				}()
 				// func() will be executed only if *all* event handlers call next()
-				emitted := h.Config.Events.Emit(session, events.BeforeHandler, func() {
+				h.Config.Events.Emit(session, events.BeforeHandler, func() {
 					handler.ServeHTTP(session)
 					h.Config.Events.Emit(session, events.AfterHandler, func() {
 						session.Response.Send()
