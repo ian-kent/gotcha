@@ -43,7 +43,7 @@ func new(name string) {
 	log.Printf("Creating application: '%s'\n", name)
 
 	// TODO clean this up
-	
+
 	createDir(name)
 	writeAsset("assets/new_app/main.go", name+"/main.go")
 	writeAsset("assets/new_app/Makefile", name+"/Makefile")

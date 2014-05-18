@@ -2,8 +2,8 @@ package Config
 
 import (
 	"flag"
-	"os"
 	"github.com/ian-kent/gotcha/events"
+	"os"
 )
 
 type Config struct {

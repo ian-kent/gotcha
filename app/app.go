@@ -1,10 +1,10 @@
 package app
 
 import (
-	"github.com/ian-kent/gotcha/config"
-	"github.com/ian-kent/gotcha/router"
-	"github.com/ian-kent/gotcha/http"
 	"github.com/ian-kent/go-log/log"
+	"github.com/ian-kent/gotcha/config"
+	"github.com/ian-kent/gotcha/http"
+	"github.com/ian-kent/gotcha/router"
 	nethttp "net/http"
 )
 

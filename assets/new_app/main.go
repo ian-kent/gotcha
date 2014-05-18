@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/ian-kent/go-log/log"
 	gotcha "github.com/ian-kent/gotcha/app"
 	"github.com/ian-kent/gotcha/http"
-	"github.com/ian-kent/go-log/log"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 	app.Start()
 
 	// FIXME
-	<- make(chan int)
+	<-make(chan int)
 }
 
 func example(session *http.Session) {

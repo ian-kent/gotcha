@@ -16,9 +16,9 @@ type Request struct {
 func CreateRequest(session *Session, request *nethttp.Request) *Request {
 	req := &Request{
 		Session: session,
-		req: request,
-		URL: request.URL,
-		Method: request.Method,
+		req:     request,
+		URL:     request.URL,
+		Method:  request.Method,
 		Cookies: make(map[string]*nethttp.Cookie),
 	}
 

@@ -1,17 +1,17 @@
 package main
 
 import (
+	"fmt"
+	"github.com/ian-kent/go-log/layout"
+	"github.com/ian-kent/go-log/log"
 	gotcha "github.com/ian-kent/gotcha/app"
+	"github.com/ian-kent/gotcha/assets/demo_app/wrappers"
 	"github.com/ian-kent/gotcha/events"
 	"github.com/ian-kent/gotcha/http"
-	"github.com/ian-kent/gotcha/assets/demo_app/wrappers"
-	"github.com/ian-kent/go-log/log"
-	"github.com/ian-kent/go-log/layout"
+	nethttp "net/http"
 	"net/url"
 	"strconv"
-	"fmt"
 	"time"
-	nethttp "net/http"
 )
 
 func main() {
@@ -50,7 +50,7 @@ func main() {
 	app.On(events.AfterHandler, func(session *http.Session, next func()) {
 		n := session.Stash["test"].(int) + 1
 		session.Response.Cookies.Set(&nethttp.Cookie{
-			Name: "test",
+			Name:  "test",
 			Value: strconv.Itoa(n),
 		})
 		log.Println("Got AfterHandler event!")
@@ -66,7 +66,7 @@ func main() {
 	app.Start()
 
 	c := make(chan int)
-	<- c
+	<-c
 }
 
 func example(session *http.Session) {
@@ -83,7 +83,7 @@ func example2(session *http.Session) {
 }
 
 func example3(session *http.Session) {
-	session.Redirect(&url.URL{Path:"/foo"})
+	session.Redirect(&url.URL{Path: "/foo"})
 }
 
 func err(session *http.Session) {

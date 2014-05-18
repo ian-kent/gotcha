@@ -2,15 +2,15 @@ package http
 
 import (
 	"bytes"
+	"code.google.com/p/go-uuid/uuid"
+	"fmt"
+	"github.com/ian-kent/go-log/log"
 	"github.com/ian-kent/gotcha/config"
 	"github.com/ian-kent/gotcha/router/route"
 	"html/template"
-	"github.com/ian-kent/go-log/log"
-	"code.google.com/p/go-uuid/uuid"
 	nethttp "net/http"
 	neturl "net/url"
 	"runtime"
-	"fmt"
 )
 
 type Session struct {
@@ -89,7 +89,7 @@ func (session *Session) Render(asset string) {
 func (session *Session) RenderNotFound() {
 	session.Stash["Gotcha"].(map[string]interface{})["Error"] = "Not found"
 	session.Response.Status = 404
-	
+
 	e := session.render("notfound.html")
 	if e != nil {
 		log.Printf("Error rendering not found page: %s", e)

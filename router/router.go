@@ -1,16 +1,16 @@
 package Router
 
 import (
+	"errors"
+	"github.com/ian-kent/go-log/log"
 	"github.com/ian-kent/gotcha/config"
+	"github.com/ian-kent/gotcha/events"
 	"github.com/ian-kent/gotcha/http"
 	"github.com/ian-kent/gotcha/mime"
-	"github.com/ian-kent/gotcha/events"
 	"github.com/ian-kent/gotcha/router/route"
-	"github.com/ian-kent/go-log/log"
 	nethttp "net/http"
 	"regexp"
 	"time"
-	"errors"
 )
 
 // http://stackoverflow.com/questions/6564558/wildcards-in-the-pattern-for-http-handlefunc
@@ -104,7 +104,7 @@ func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Se
 	h.Routes[&route.Route{m, path, pattern}] = HandlerFunc(handler)
 }
 
-func (h *Router) Serve(session *http.Session) {	
+func (h *Router) Serve(session *http.Session) {
 	for route, handler := range h.Routes {
 		if matches := route.Pattern.FindStringSubmatch(session.Request.URL.Path); len(matches) > 0 {
 			_, ok := route.Methods[session.Request.Method]
@@ -135,7 +135,7 @@ func (h *Router) Serve(session *http.Session) {
 						session.Response.Send()
 					})
 				})
-				return;
+				return
 			}
 		}
 	}
@@ -149,7 +149,7 @@ func (h *Router) ServeHTTP(w nethttp.ResponseWriter, r *nethttp.Request) {
 	tStart := time.Now().UnixNano()
 
 	h.Serve(session)
-	
+
 	t := float64(time.Now().UnixNano()-tStart) / 100000 // ms
 	log.Printf("%s %s (%3.2fms) (%d)", r.Method, r.URL, t, session.Response.Status)
 	h.Config.Events.Emit(session, events.AfterResponse, func() {})

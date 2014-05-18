@@ -1,24 +1,25 @@
 package http
 
 import (
-	nethttp "net/http"
-	neturl "net/url"
 	"bytes"
 	"github.com/ian-kent/go-log/log"
+	nethttp "net/http"
+	neturl "net/url"
 )
 
 type Response struct {
-	session *Session
-	writer  nethttp.ResponseWriter
-	buffer  *bytes.Buffer
+	session    *Session
+	writer     nethttp.ResponseWriter
+	buffer     *bytes.Buffer
 	headerSent bool
 
-	Status    int
+	Status  int
 	Headers Headers
 	Cookies Cookies
 }
 
 type Headers map[string][]string
+
 func (h Headers) Add(name string, value string) {
 	// TODO support same header multiple times
 	h[name] = []string{value}
@@ -36,12 +37,12 @@ func (c Cookies) Set(cookie *nethttp.Cookie) {
 
 func CreateResponse(session *Session, writer nethttp.ResponseWriter) *Response {
 	return &Response{
-		session: session,
-		writer: writer,
-		buffer: &bytes.Buffer{},
+		session:    session,
+		writer:     writer,
+		buffer:     &bytes.Buffer{},
 		headerSent: false,
 
-		Status: 200,
+		Status:  200,
 		Headers: make(Headers),
 		Cookies: make(Cookies),
 	}
@@ -62,7 +63,7 @@ func (r *Response) Chunked() chan []byte {
 		for b := range c {
 			if len(b) == 0 {
 				log.Trace("Chunk stream ended")
-				break;
+				break
 			}
 			log.Trace("Writing chunk: %d bytes", len(b))
 			r.writer.Write(b)

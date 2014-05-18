@@ -9,22 +9,23 @@ const (
 )
 
 type Emitter struct {
-	listeners map[int][]func(interface{},func())
+	listeners map[int][]func(interface{}, func())
 }
-func (e *Emitter) On(event int, handler func(interface{},func())) {
+
+func (e *Emitter) On(event int, handler func(interface{}, func())) {
 	if e.listeners == nil {
-		e.listeners = make(map[int][]func(interface{},func()))
+		e.listeners = make(map[int][]func(interface{}, func()))
 	}
 	_, ok := e.listeners[event]
 	if !ok {
-		e.listeners[event] = make([]func(interface{},func()), 0)
+		e.listeners[event] = make([]func(interface{}, func()), 0)
 	}
 	e.listeners[event] = append(e.listeners[event], handler)
 }
 func (e *Emitter) Emit(session interface{}, event int, next func()) {
-	if e.listeners == nil { 
+	if e.listeners == nil {
 		next()
-		return 
+		return
 	}
 	c := make(chan int)
 	n := 0
@@ -39,7 +40,7 @@ func (e *Emitter) Emit(session interface{}, event int, next func()) {
 		}
 	}
 	for n > 0 {
-		i := <- c
+		i := <-c
 		if i == 1 {
 			n--
 		}
