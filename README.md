@@ -24,6 +24,7 @@ A(nother) web framework for Go.
   * Static content handler
 * Simple action composition
 * Per-connection data stash
+* Streaming/chunked responses
 * Cached template rendering with [html/template](http://golang.org/pkg/html/template)
 * Embedded assets using [jteeuwen/go-bindata](https://github.com/jteeuwen/go-bindata)
 * Not tied to any design pattern (e.g. MVC, MVP etc)
@@ -76,7 +77,6 @@ Without putting too much thought into it:
 
 * Add nicer routing syntax which translates to a regex
 * Write some tests
-* Support streaming/chunked data using channels
 
 ### Licence
 

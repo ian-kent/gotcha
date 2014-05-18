@@ -9,6 +9,8 @@ import (
 	"github.com/ian-kent/go-log/layout"
 	"net/url"
 	"strconv"
+	"fmt"
+	"time"
 	nethttp "net/http"
 )
 
@@ -18,6 +20,7 @@ func main() {
 
 	// Set the logger output pattern
 	log.Logger().Appender().SetLayout(layout.Pattern("[%d] [%p] %m"))
+	log.Logger().SetLevel(log.Stol("TRACE"))
 
 	// Get the router
 	r := app.Router
@@ -26,6 +29,7 @@ func main() {
 	r.Get("/", example)
 	r.Get("/foo", example2)
 	r.Get("/bar", example3)
+	r.Get("/stream", streamed)
 	r.Get("/err", err)
 
 	// Serve static content (but really use a CDN)
@@ -86,3 +90,12 @@ func err(session *http.Session) {
 	panic("Arrggghh")
 }
 
+func streamed(session *http.Session) {
+	c := session.Response.Chunked()
+	for i := 1; i <= 5; i++ {
+		time.Sleep(1 * time.Second)
+		b := []byte(fmt.Sprintf("Counter: %d\n", i))
+		c <- b
+	}
+	c <- make([]byte, 0)
+}
