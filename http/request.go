@@ -2,15 +2,16 @@ package http
 
 import (
 	nethttp "net/http"
-	neturl "net/url"
+	"net/url"
+	"mime/multipart"
 )
 
 type Request struct {
-	Session *Session
-	req     *nethttp.Request
-	URL     *neturl.URL
-	Method  string
-	Cookies map[string]*nethttp.Cookie
+	Session      *Session
+	req          *nethttp.Request
+	URL          *url.URL
+	Method       string
+	Cookies      map[string]*nethttp.Cookie
 }
 
 func CreateRequest(session *Session, request *nethttp.Request) *Request {
@@ -27,4 +28,23 @@ func CreateRequest(session *Session, request *nethttp.Request) *Request {
 	}
 
 	return req
+}
+
+func (r *Request) Form() url.Values {
+	r.req.ParseForm()
+	return r.req.Form
+}
+
+func (r *Request) PostForm() url.Values {
+	r.req.ParseForm()
+	return r.req.PostForm
+}
+
+func (r *Request) MultipartForm() *multipart.Form {
+	r.req.ParseMultipartForm(1024000) // FIXME
+	return r.req.MultipartForm
+}
+
+func (r *Request) Header() nethttp.Header {
+	return r.req.Header
 }
