@@ -1,11 +1,11 @@
 package Config
 
 import (
-	"flag"
-	"github.com/ian-kent/gotcha/events"
-	"github.com/ian-kent/go-log/log"
-	"os"
 	"errors"
+	"flag"
+	"github.com/ian-kent/go-log/log"
+	"github.com/ian-kent/gotcha/events"
+	"os"
 )
 
 type Config struct {
