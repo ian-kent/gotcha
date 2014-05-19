@@ -37,6 +37,10 @@ on port ```7050``` by default.
 | help      | Display application usage information
 | listen    | The interface and port to bind on, e.g. ```0.0.0.0:7050```
 
+For example:
+
+    AppName -listen=:1234
+
 ### Embedded assets
 
 Any content inside the ```asset``` directory is automatically embedded
