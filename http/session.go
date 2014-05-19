@@ -43,38 +43,38 @@ func (session *Session) render(asset string) error {
 
 	c, ok := session.Config.Cache["template:"+asset]
 	if !ok {
-		log.Printf("Loading asset: %s", asset)
+		log.Trace("Loading asset: %s", asset)
 		a, err := session.Config.AssetLoader(asset)
-		log.Printf("Creating template: %s", asset)
+		log.Trace("Creating template: %s", asset)
 		t = template.New(asset)
 		if err != nil || a == nil {
-			log.Printf("Failed loading template %s: %s", asset, err)
+			log.Error("Failed loading template %s: %s", asset, err)
 			return err
 		}
-		log.Printf("Parsing template: %s", asset)
+		log.Trace("Parsing template: %s", asset)
 		_, err = t.Parse(string(a))
 		if err != nil {
-			log.Printf("Failed parsing template %s: %s", asset, err)
+			log.Error("Failed parsing template %s: %s", asset, err)
 			return err
 		}
-		log.Printf("Template parsed successfully: %s", asset)
+		log.Trace("Template parsed successfully: %s", asset)
 		session.Config.Cache["template:"+asset] = t
 	} else {
 		t = c.(*template.Template)
-		log.Printf("Template loaded from cache: %s", asset)
+		log.Trace("Template loaded from cache: %s", asset)
 	}
 
 	var b bytes.Buffer
 	err := t.Execute(&b, session.Stash)
 	if err != nil {
-		log.Printf("Failed executing template %s: %s", asset, err)
+		log.Error("Failed executing template %s: %s", asset, err)
 		return err
 	}
 
 	_, err = session.Response.Write(b.Bytes())
 
 	if err != nil {
-		log.Printf("Error writing output for template %s: %s", asset, err)
+		log.Error("Error writing output for template %s: %s", asset, err)
 		return err
 	}
 
@@ -94,8 +94,7 @@ func (session *Session) RenderNotFound() {
 
 	e := session.render("notfound.html")
 	if e != nil {
-		log.Printf("Error rendering not found page: %s", e)
-		session.Response.Status = 404
+		log.Error("Error rendering not found page: %s", e)
 	}
 }
 
@@ -109,15 +108,16 @@ func (session *Session) RenderException(status int, err error) {
 	n := runtime.Stack(buf, true)
 	session.Stash["Gotcha"].(map[string]interface{})["Stack"] = fmt.Sprintf("%s", buf[:n])
 
-	log.Printf("Exception %s: %s\n%s", key, err.Error(), session.Stash["Gotcha"].(map[string]interface{})["Stack"])
+	log.Error("Exception %s: %s\n%s", key, err.Error(), session.Stash["Gotcha"].(map[string]interface{})["Stack"])
 
 	e := session.render("error.html")
 	if e != nil {
-		log.Printf("Error rendering error page: %s", e)
+		log.Error("Error rendering error page: %s", e)
 		session.Response.Write([]byte("[" + key + "] Internal Server Error: " + err.Error() + "\n"))
 	}
 }
 
 func (session *Session) Redirect(url *neturl.URL) {
+	log.Trace("Redirect to: %s", url)
 	session.Response.Redirect(url, nethttp.StatusFound)
 }
