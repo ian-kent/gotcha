@@ -96,6 +96,34 @@ The handler is any function matching ```func(*http.Session)```.
 		session.Render("index.html")
 	}
 
+#### Data modeling and form validation
+
+You can create a data model to represent your form data:
+
+    type MyForm struct {
+    	Name string
+    }
+
+You can assign validation rules to fields in your model:
+
+    type MyForm struct {
+    	Name string `minlength:1; maxlength:200`
+    }
+
+The form helper can populate and validate this for you:
+
+    model := &MyForm{}
+	session.Stash["form"] = form.New(session, model).Populate().Validate()
+	session.Render("index.html")
+
+You can then access form properties from templates:
+
+    {{ .form.Model.Name }}
+    {{ .form.HasErrors }}
+    {{ .form.Errors["Name"] }}
+    {{ .form.Errors["Name"]["minlength"] }}
+    {{ .form.Values["Name"] }}
+
 #### Serving static content
 
 You can setup routes which only serve static content without a handler:

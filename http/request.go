@@ -1,17 +1,17 @@
 package http
 
 import (
+	"mime/multipart"
 	nethttp "net/http"
 	"net/url"
-	"mime/multipart"
 )
 
 type Request struct {
-	Session      *Session
-	req          *nethttp.Request
-	URL          *url.URL
-	Method       string
-	Cookies      map[string]*nethttp.Cookie
+	Session *Session
+	req     *nethttp.Request
+	URL     *url.URL
+	Method  string
+	Cookies map[string]*nethttp.Cookie
 }
 
 func CreateRequest(session *Session, request *nethttp.Request) *Request {

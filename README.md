@@ -24,6 +24,7 @@ See the [introduction](INTRODUCTION.md) or [example applications](assets) for mo
   * Supports regexes with named capture groups
   * GET/POST/PUT/PATCH/DELETE/OPTIONS
   * Static content handler
+* Data modeling and form validation
 * Simple action composition
 * Per-connection data stash
 * Streaming/chunked responses
@@ -79,6 +80,7 @@ Without putting too much thought into it:
 
 * Add nicer routing syntax which translates to a regex
 * Write some tests
+* Better documentation (including go-doc)
 
 ### Licence
 

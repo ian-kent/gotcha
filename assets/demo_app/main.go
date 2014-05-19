@@ -7,6 +7,7 @@ import (
 	gotcha "github.com/ian-kent/gotcha/app"
 	"github.com/ian-kent/gotcha/assets/demo_app/wrappers"
 	"github.com/ian-kent/gotcha/events"
+	"github.com/ian-kent/gotcha/form"
 	"github.com/ian-kent/gotcha/http"
 	nethttp "net/http"
 	"net/url"
@@ -25,8 +26,9 @@ func main() {
 	// Get the router
 	r := app.Router
 
-	// Create someroutes
+	// Create some routes
 	r.Get("/", example)
+	r.Post("/", examplepost)
 	r.Get("/foo", example2)
 	r.Get("/bar", example3)
 	r.Get("/stream", streamed)
@@ -71,6 +73,17 @@ func example(session *http.Session) {
 	// Stash a value and render a template
 	session.Stash["Title"] = "Welcome to Gotcha"
 	session.Render("index.html")
+}
+
+type ExampleForm struct {
+	Title string `minlength:1; maxlength:200`
+}
+
+func examplepost(session *http.Session) {
+	m := &ExampleForm{}
+	session.Stash["fh"] = form.New(session, m).Populate().Validate()
+	log.Info("Got posted title: %s", m.Title)
+	example(session)
 }
 
 func example2(session *http.Session) {

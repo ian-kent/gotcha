@@ -11,5 +11,24 @@
 		<section>
 			<h1>Wasn't that easy? :)</h1>
 		</section>
+		<div>
+			{{ if .fh.Model.Title }}
+			<p>
+				<strong>You entered: </strong> {{ .fh.Model.Title }}
+			</p>
+			{{ end }}
+			{{ if .fh.HasErrors }}
+			<p style="border: 1px solid #f00; color: #f00">
+				<strong>Error</strong>
+			</p>
+			{{ end }}
+			<form action="" method="POST">
+				{{ range .fh.Errors.Title }}
+					<p style="color: #f00">{{ . }}</p>
+				{{ end }}
+				<input type="text" name="title" value="{{ .fh.Model.Title }}" />
+				<button type="submit">Submit</button>
+			</form>
+		</div>
 	</body>
 </html>
