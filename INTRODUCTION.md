@@ -131,7 +131,7 @@ To render a template, call the session Render function:
 The stash is automatically passed to the template during rendering,
 so variables in the stash are available to the template:
 
-    <h1>{{ foo }}</h1>
+    <h1>{{ .foo }}</h1>
 
 ## Examples
 
