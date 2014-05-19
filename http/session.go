@@ -43,13 +43,15 @@ func (session *Session) render(asset string) error {
 
 	c, ok := session.Config.Cache["template:"+asset]
 	if !ok {
-		log.Printf("Parsing template: %s", asset)
-		t = template.New(asset)
+		log.Printf("Loading asset: %s", asset)
 		a, err := session.Config.AssetLoader(asset)
-		if err != nil {
+		log.Printf("Creating template: %s", asset)
+		t = template.New(asset)
+		if err != nil || a == nil {
 			log.Printf("Failed loading template %s: %s", asset, err)
 			return err
 		}
+		log.Printf("Parsing template: %s", asset)
 		_, err = t.Parse(string(a))
 		if err != nil {
 			log.Printf("Failed parsing template %s: %s", asset, err)
@@ -112,8 +114,7 @@ func (session *Session) RenderException(status int, err error) {
 	e := session.render("error.html")
 	if e != nil {
 		log.Printf("Error rendering error page: %s", e)
-		session.Response.Write([]byte("[" + key + "] Internal Server Error: "))
-		session.Response.Write([]byte(err.Error()))
+		session.Response.Write([]byte("[" + key + "] Internal Server Error: " + err.Error() + "\n"))
 	}
 }
 

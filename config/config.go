@@ -3,7 +3,9 @@ package Config
 import (
 	"flag"
 	"github.com/ian-kent/gotcha/events"
+	"github.com/ian-kent/go-log/log"
 	"os"
+	"errors"
 )
 
 type Config struct {
@@ -14,6 +16,14 @@ type Config struct {
 }
 
 func Create(assetLoader func(string) ([]byte, error)) *Config {
+	if assetLoader == nil {
+		log.Warn("No asset loader provided; content loading will fail")
+		assetLoader = func(asset string) ([]byte, error) {
+			log.Warn("Attempted to load asset but no asset loader provided: %s", asset)
+			return nil, errors.New("Not found")
+		}
+	}
+
 	config := &Config{
 		Listen:      ":7050",
 		AssetLoader: assetLoader,
