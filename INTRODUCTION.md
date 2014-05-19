@@ -133,6 +133,16 @@ so variables in the stash are available to the template:
 
     <h1>{{ foo }}</h1>
 
+## Examples
+
+Examples of Gotcha applications can be found in the assets directory:
+
+| Example                     | Description
+| --------------------------- | -----------
+| [demo_app](assets/demo_app) | A demo application which uses most of Gotcha's features
+| [new_app](assets/new_app)   | The template for a ```gotcha new``` application
+| [tiny_app](assets/tiny_app) | A pointless attempt at golfing a gotcha application
+
 ### Licence
 
 Copyright ©‎ 2014, Ian Kent (http://www.iankent.eu).

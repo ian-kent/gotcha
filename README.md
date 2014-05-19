@@ -13,6 +13,8 @@ A(nother) web framework for Go.
 * Run your application: ```MyApp```
 * Open your application in a browser: [http://localhost:7050](http://localhost:7050)
 
+See the [introduction](INTRODUCTION.md) or [example applications](assets) for more information.
+
 ### Features
 
 * Easy deployment
