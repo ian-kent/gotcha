@@ -95,7 +95,7 @@ func (session *Session) RenderNotFound() {
 	e := session.render("notfound.html")
 	if e != nil {
 		log.Printf("Error rendering not found page: %s", e)
-		session.RenderException(500, e)
+		session.Response.Status = 404
 	}
 }
 
