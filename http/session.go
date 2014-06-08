@@ -19,12 +19,15 @@ type Session struct {
 	Request  *Request
 	Response *Response
 	Stash    map[string]interface{}
+	SessionID string
+	SessionData map[string]string
 }
 
 func CreateSession(conf *Config.Config, request *nethttp.Request, writer nethttp.ResponseWriter) *Session {
 	session := &Session{
 		Config: conf,
 		Stash:  make(map[string]interface{}, 0),
+		SessionData: make(map[string]string),
 	}
 
 	// Somewhere to store internal stuff
@@ -33,7 +36,22 @@ func CreateSession(conf *Config.Config, request *nethttp.Request, writer nethttp
 	session.Request = CreateRequest(session, request)
 	session.Response = CreateResponse(session, writer)
 
+	session.loadSessionData()
+
 	return session
+}
+
+func (s *Session) loadSessionData() {	
+	if sid_cookie, ok := s.Request.Cookies["__SID"]; ok {
+		s.SessionID = sid_cookie.Value
+		log.Info("Retrieved session ID (__SID): %s", s.SessionID)
+	}
+
+	if sd_cookie, ok := s.Request.Cookies["__SD"]; ok {
+		// FIXME deserialise
+		s.SessionData["TEMP"] = sd_cookie.Value
+		log.Info("Retrieved session data: %s", s.SessionData)
+	}
 }
 
 func (session *Session) render(asset string) error {
@@ -79,6 +97,44 @@ func (session *Session) render(asset string) error {
 	}
 
 	return nil
+}
+
+func (session *Session) RenderTemplate(asset string) (string, error) {
+	asset = "assets/templates/" + asset
+
+	var t *template.Template
+
+	c, ok := session.Config.Cache["template:"+asset]
+	if !ok {
+		log.Trace("Loading asset: %s", asset)
+		a, err := session.Config.AssetLoader(asset)
+		log.Trace("Creating template: %s", asset)
+		t = template.New(asset)
+		if err != nil || a == nil {
+			log.Error("Failed loading template %s: %s", asset, err)
+			return "", err
+		}
+		log.Trace("Parsing template: %s", asset)
+		_, err = t.Parse(string(a))
+		if err != nil {
+			log.Error("Failed parsing template %s: %s", asset, err)
+			return "", err
+		}
+		log.Trace("Template parsed successfully: %s", asset)
+		session.Config.Cache["template:"+asset] = t
+	} else {
+		t = c.(*template.Template)
+		log.Trace("Template loaded from cache: %s", asset)
+	}
+
+	var b bytes.Buffer
+	err := t.Execute(&b, session.Stash)
+	if err != nil {
+		log.Error("Failed executing template %s: %s", asset, err)
+		return "", err
+	}
+
+	return b.String(), nil
 }
 
 func (session *Session) Render(asset string) {

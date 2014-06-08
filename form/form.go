@@ -64,7 +64,7 @@ func (fh *FormHelper) parseRules() {
 	}
 }
 
-func (fh *FormHelper) Populate() *FormHelper {
+func (fh *FormHelper) Populate(multipart bool) *FormHelper {
 	// TODO nested form values
 
 	t := reflect.TypeOf(fh.Model)
@@ -77,7 +77,12 @@ func (fh *FormHelper) Populate() *FormHelper {
 		fl := strings.ToLower(f)
 		log.Trace("Model field [%s] mapped to form field [%s]", f, fl)
 
-		val := fh.Session.Request.PostForm()[fl]
+		var val []string
+		if multipart {
+			val = fh.Session.Request.MultipartForm().Value[fl]
+		} else {
+			val = fh.Session.Request.PostForm()[fl]
+		}
 		if len(val) > 0 {
 			fh.Values[f] = val[0]
 			w.Field(i).SetString(val[0])

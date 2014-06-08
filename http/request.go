@@ -45,6 +45,10 @@ func (r *Request) MultipartForm() *multipart.Form {
 	return r.req.MultipartForm
 }
 
+func (r *Request) File(input string) (multipart.File, *multipart.FileHeader, error) {
+	return r.req.FormFile(input)
+}
+
 func (r *Request) Header() nethttp.Header {
 	return r.req.Header
 }

@@ -23,13 +23,18 @@ func (f HandlerFunc) ServeHTTP(session *http.Session) {
 
 type Router struct {
 	Config *Config.Config
-	Routes map[*route.Route]HandlerFunc
+	Routes []*Route
+}
+
+type Route struct {
+	Route *route.Route
+	Handler HandlerFunc
 }
 
 func Create(config *Config.Config) *Router {
 	return &Router{
 		Config: config,
-		Routes: make(map[*route.Route]HandlerFunc),
+		Routes: make([]*Route,0),
 	}
 }
 
@@ -102,7 +107,7 @@ func (h *Router) Handler(methods []string, path string, handler HandlerFunc) *Ro
 	for _, v := range methods {
 		m[v] = 1
 	}
-	h.Routes[&route.Route{m, path, pattern}] = handler
+	h.Routes = append(h.Routes, &Route{Route:&route.Route{m, path, pattern},Handler:handler})
 	return h
 }
 
@@ -112,22 +117,22 @@ func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Se
 	for _, v := range methods {
 		m[v] = 1
 	}
-	h.Routes[&route.Route{m, path, pattern}] = HandlerFunc(handler)
+	h.Routes = append(h.Routes, &Route{Route:&route.Route{m, path, pattern},Handler:HandlerFunc(handler)})
 	return h
 }
 
 func (h *Router) Serve(session *http.Session) {
-	for route, handler := range h.Routes {
-		if matches := route.Pattern.FindStringSubmatch(session.Request.URL.Path); len(matches) > 0 {
-			_, ok := route.Methods[session.Request.Method]
+	for _, route := range h.Routes {
+		if matches := route.Route.Pattern.FindStringSubmatch(session.Request.URL.Path); len(matches) > 0 {
+			_, ok := route.Route.Methods[session.Request.Method]
 			if ok {
-				for i, named := range route.Pattern.SubexpNames() {
+				for i, named := range route.Route.Pattern.SubexpNames() {
 					if len(named) > 0 {
 						log.Trace("Matched named pattern '%s': %s", named, matches[i])
 						session.Stash[named] = matches[i]
 					}
 				}
-				session.Route = route
+				session.Route = route.Route
 				defer func() {
 					if e := recover(); e != nil {
 						switch e.(type) {
@@ -141,7 +146,7 @@ func (h *Router) Serve(session *http.Session) {
 				}()
 				// func() will be executed only if *all* event handlers call next()
 				h.Config.Events.Emit(session, events.BeforeHandler, func() {
-					handler.ServeHTTP(session)
+					route.Handler.ServeHTTP(session)
 					h.Config.Events.Emit(session, events.AfterHandler, func() {
 						session.Response.Send()
 					})
@@ -150,9 +155,14 @@ func (h *Router) Serve(session *http.Session) {
 			}
 		}
 	}
-	// no pattern matched; send 404 response
-	session.RenderNotFound()
-	session.Response.Send()
+
+	// no pattern matched; send 404 response	
+	h.Config.Events.Emit(session, events.BeforeHandler, func() {
+		session.RenderNotFound()
+		h.Config.Events.Emit(session, events.AfterHandler, func() {
+			session.Response.Send()
+		})
+	})
 }
 
 func (h *Router) ServeHTTP(w nethttp.ResponseWriter, r *nethttp.Request) {
