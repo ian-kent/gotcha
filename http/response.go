@@ -125,6 +125,12 @@ func (r *Response) Redirect(url *neturl.URL, status int) {
 	r.Status = status
 }
 
+func (r *Response) Close() {
+	if r.Gzipped {
+		r.gzwriter.Close()
+	}
+}
+
 func (r *Response) Send() {
 	if r.headerSent {
 		return
@@ -136,8 +142,6 @@ func (r *Response) Send() {
 		//r.writeSessionData()
 	}
 
-	r.writer.WriteHeader(r.Status)
-
 	for k, v := range r.Headers {
 		for _, h := range v {
 			log.Trace("Adding header [%s]: [%s]", k, h)
@@ -148,6 +152,8 @@ func (r *Response) Send() {
 		nethttp.SetCookie(r.writer, c)
 	}
 	
+	r.writer.WriteHeader(r.Status)
+
 	if r.Gzipped {
 		r.gzwriter.Write(r.buffer.Bytes())
 	} else {

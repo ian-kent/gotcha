@@ -11,6 +11,7 @@ import (
 	nethttp "net/http"
 	"regexp"
 	"time"
+	"sync"
 )
 
 // http://stackoverflow.com/questions/6564558/wildcards-in-the-pattern-for-http-handlefunc
@@ -142,15 +143,21 @@ func (h *Router) Serve(session *http.Session) {
 							session.RenderException(500, e.(error))
 						}
 						session.Response.Send()
+						session.Response.Close()
 					}
 				}()
+				var wg sync.WaitGroup
+				wg.Add(1)
 				// func() will be executed only if *all* event handlers call next()
 				h.Config.Events.Emit(session, events.BeforeHandler, func() {
 					route.Handler.ServeHTTP(session)
 					h.Config.Events.Emit(session, events.AfterHandler, func() {
 						session.Response.Send()
+						session.Response.Close()
+						wg.Done()
 					})
 				})
+				wg.Wait()
 				return
 			}
 		}
