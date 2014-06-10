@@ -8,7 +8,6 @@ import (
 	"code.google.com/p/go.crypto/bcrypt"
 	"crypto/rand"
 	"compress/gzip"
-	"io"
 )
 
 type Response struct {
@@ -18,7 +17,8 @@ type Response struct {
 	headerSent bool
 
 	Gzipped bool
-	gz *gzip.Writer
+	gzwriter *gzip.Writer
+
 	IsChunked bool
 
 	Status  int
@@ -58,6 +58,12 @@ func CreateResponse(session *Session, writer nethttp.ResponseWriter) *Response {
 	}
 }
 
+func (r *Response) Gzip() {
+	r.Gzipped = true
+	r.writer.Header().Set("Content-Encoding", "gzip")
+	r.gzwriter = gzip.NewWriter(r.writer)
+}
+
 func (r *Response) createSessionId() {
 	bytes := make([]byte, 256)
 	rand.Read(bytes)
@@ -71,27 +77,19 @@ func (r *Response) createSessionId() {
 }
 
 func (r *Response) Write(bytes []byte) (int, error) {
-	return r.buffer.Write(bytes)
+	if r.headerSent {
+		if r.Gzipped {
+			return r.gzwriter.Write(bytes)
+		} else {
+			return r.writer.Write(bytes)
+		}
+	} else {
+		return r.buffer.Write(bytes)
+	}
 }
 
 func (r *Response) WriteText(text string) {
-	r.buffer.Write([]byte(text))
-}
-
-type gzipResponseWriter struct {
-	io.Writer
-	nethttp.ResponseWriter
-}
-
-func (w gzipResponseWriter) Write(b []byte) (int, error) {
-	return w.Writer.Write(b)
-}
-
-func (r *Response) Gzip() {
-	r.Gzipped = true
-	r.gz = gzip.NewWriter(r.writer)
-	r.writer = gzipResponseWriter{Writer: r.gz, ResponseWriter: r.writer}
-	r.Headers.Add("Content-Encoding", "gzip")
+	r.Write([]byte(text))
 }
 
 func (r *Response) Chunked() chan []byte {
@@ -103,12 +101,17 @@ func (r *Response) Chunked() chan []byte {
 			if len(b) == 0 {
 				log.Trace("Chunk stream ended")
 				if r.Gzipped {
-					r.gz.Close()
+					r.gzwriter.Close()
 				}
 				break
 			}
 			log.Trace("Writing chunk: %d bytes", len(b))
-			r.writer.Write(b)
+			if r.Gzipped {
+				r.gzwriter.Write(r.buffer.Bytes())
+			} else {
+				r.writer.Write(r.buffer.Bytes())
+			}
+			
 			if f, ok := r.writer.(nethttp.Flusher); ok {
 				f.Flush()
 			}
@@ -133,6 +136,8 @@ func (r *Response) Send() {
 		//r.writeSessionData()
 	}
 
+	r.writer.WriteHeader(r.Status)
+
 	for k, v := range r.Headers {
 		for _, h := range v {
 			log.Trace("Adding header [%s]: [%s]", k, h)
@@ -142,10 +147,16 @@ func (r *Response) Send() {
 	for _, c := range r.Cookies {
 		nethttp.SetCookie(r.writer, c)
 	}
-	r.writer.WriteHeader(r.Status)
-	r.writer.Write(r.buffer.Bytes())
+	
+	if r.Gzipped {
+		r.gzwriter.Write(r.buffer.Bytes())
+	} else {
+		r.writer.Write(r.buffer.Bytes())
+	}
 
-	if !r.IsChunked && r.Gzipped {
-		r.gz.Close()
+	if !r.IsChunked {
+		if r.Gzipped {
+			r.gzwriter.Close()
+		}
 	}
 }
