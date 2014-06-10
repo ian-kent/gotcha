@@ -37,6 +37,10 @@ func (h Headers) Set(name string, value string) {
 	h[name] = []string{value}
 }
 
+func (h Headers) Remove(name string) {
+	delete(h, name)
+}
+
 type Cookies map[string]*nethttp.Cookie
 
 func (c Cookies) Set(cookie *nethttp.Cookie) {
@@ -60,7 +64,7 @@ func CreateResponse(session *Session, writer nethttp.ResponseWriter) *Response {
 
 func (r *Response) Gzip() {
 	r.Gzipped = true
-	r.writer.Header().Set("Content-Encoding", "gzip")
+	r.Headers.Add("Content-Encoding", "gzip")
 	r.gzwriter = gzip.NewWriter(r.writer)
 }
 
@@ -94,8 +98,8 @@ func (r *Response) WriteText(text string) {
 
 func (r *Response) Chunked() chan []byte {
 	c := make(chan []byte)
-	r.Send()
 	r.IsChunked = true
+	r.Send()
 	go func() {
 		for b := range c {
 			if len(b) == 0 {
@@ -107,9 +111,9 @@ func (r *Response) Chunked() chan []byte {
 			}
 			log.Trace("Writing chunk: %d bytes", len(b))
 			if r.Gzipped {
-				r.gzwriter.Write(r.buffer.Bytes())
+				r.gzwriter.Write(b)
 			} else {
-				r.writer.Write(r.buffer.Bytes())
+				r.Write(b)
 			}
 			
 			if f, ok := r.writer.(nethttp.Flusher); ok {
@@ -126,7 +130,7 @@ func (r *Response) Redirect(url *neturl.URL, status int) {
 }
 
 func (r *Response) Close() {
-	if r.Gzipped {
+	if !r.IsChunked && r.Gzipped {
 		r.gzwriter.Close()
 	}
 }
