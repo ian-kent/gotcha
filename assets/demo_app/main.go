@@ -81,7 +81,7 @@ type ExampleForm struct {
 
 func examplepost(session *http.Session) {
 	m := &ExampleForm{}
-	session.Stash["fh"] = form.New(session, m).Populate().Validate()
+	session.Stash["fh"] = form.New(session, m).Populate(false).Validate()
 	log.Info("Got posted title: %s", m.Title)
 	example(session)
 }
