@@ -13,6 +13,8 @@ type Config struct {
 	AssetLoader func(string) ([]byte, error)
 	Cache       map[string]interface{}
 	Events      *events.Emitter
+	LeftDelim   string
+	RightDelim  string
 }
 
 func Create(assetLoader func(string) ([]byte, error)) *Config {
@@ -29,6 +31,8 @@ func Create(assetLoader func(string) ([]byte, error)) *Config {
 		AssetLoader: assetLoader,
 		Cache:       make(map[string]interface{}),
 		Events:      &events.Emitter{},
+		LeftDelim:   "{{",
+		RightDelim:  "}}",
 	}
 
 	config.env()

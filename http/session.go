@@ -65,6 +65,7 @@ func (session *Session) render(asset string) error {
 		a, err := session.Config.AssetLoader(asset)
 		log.Trace("Creating template: %s", asset)
 		t = template.New(asset)
+		t.Delims(session.Config.LeftDelim, session.Config.RightDelim)
 		if err != nil || a == nil {
 			log.Error("Failed loading template %s: %s", asset, err)
 			return err
@@ -110,6 +111,7 @@ func (session *Session) RenderTemplate(asset string) (string, error) {
 		a, err := session.Config.AssetLoader(asset)
 		log.Trace("Creating template: %s", asset)
 		t = template.New(asset)
+		t.Delims(session.Config.LeftDelim, session.Config.RightDelim)
 		if err != nil || a == nil {
 			log.Error("Failed loading template %s: %s", asset, err)
 			return "", err

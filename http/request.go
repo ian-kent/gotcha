@@ -4,6 +4,7 @@ import (
 	"mime/multipart"
 	nethttp "net/http"
 	"net/url"
+	"io"
 )
 
 type Request struct {
@@ -12,6 +13,7 @@ type Request struct {
 	URL     *url.URL
 	Method  string
 	Cookies map[string]*nethttp.Cookie
+	RemoteAddr string
 }
 
 func CreateRequest(session *Session, request *nethttp.Request) *Request {
@@ -21,6 +23,7 @@ func CreateRequest(session *Session, request *nethttp.Request) *Request {
 		URL:     request.URL,
 		Method:  request.Method,
 		Cookies: make(map[string]*nethttp.Cookie),
+		RemoteAddr: request.RemoteAddr,
 	}
 
 	for _, cookie := range request.Cookies() {
@@ -51,4 +54,8 @@ func (r *Request) File(input string) (multipart.File, *multipart.FileHeader, err
 
 func (r *Request) Header() nethttp.Header {
 	return r.req.Header
+}
+
+func (r *Request) Body() io.ReadCloser {
+	return r.req.Body
 }
