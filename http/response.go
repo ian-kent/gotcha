@@ -1,12 +1,14 @@
 package http
 
 import (
+	"bufio"
 	"bytes"
 	"code.google.com/p/go.crypto/bcrypt"
 	"compress/gzip"
 	"crypto/rand"
 	"fmt"
 	"github.com/ian-kent/go-log/log"
+	"net"
 	nethttp "net/http"
 	neturl "net/url"
 	"strings"
@@ -21,8 +23,11 @@ type Response struct {
 	Gzipped  bool
 	gzwriter *gzip.Writer
 
-	IsChunked     bool
+	IsChunked bool
+
 	IsEventStream bool
+	esBufrw       *bufio.ReadWriter
+	esConn        net.Conn
 
 	Status  int
 	Headers Headers
@@ -57,11 +62,12 @@ func CreateResponse(session *Session, writer nethttp.ResponseWriter) *Response {
 		buffer:     &bytes.Buffer{},
 		headerSent: false,
 
-		Gzipped:   false,
-		IsChunked: false,
-		Status:    200,
-		Headers:   make(Headers),
-		Cookies:   make(Cookies),
+		Gzipped:       false,
+		IsChunked:     false,
+		IsEventStream: false,
+		Status:        200,
+		Headers:       make(Headers),
+		Cookies:       make(Cookies),
 	}
 }
 
@@ -106,7 +112,7 @@ func (r *Response) EventStream() chan []byte {
 	r.Headers.Add("Content-Type", "text/event-stream")
 	r.Headers.Add("Cache-Control", "no-cache")
 	r.Headers.Add("Connection", "keep-alive")
-	r.Write([]byte("\n\n"))
+	//r.Write([]byte("\n\n"))
 	r.Send()
 
 	hj, ok := r.writer.(nethttp.Hijacker)
@@ -120,11 +126,14 @@ func (r *Response) EventStream() chan []byte {
 		return nil
 	}
 
+	r.esBufrw = bufrw
+	r.esConn = conn
+
 	go func() {
 		for b := range c {
 			if len(b) == 0 {
 				log.Trace("Event stream ended")
-				conn.Close()
+				r.esConn.Close()
 				break
 			}
 
@@ -134,13 +143,29 @@ func (r *Response) EventStream() chan []byte {
 				data += "data: " + l + "\n"
 			}
 			data += "\n"
-			size := fmt.Sprintf("%X", len(data)+1)
 
-			bufrw.Write([]byte(size + "\r\n"))
-			bufrw.Write([]byte(data + "\r\n"))
+			sz := len(data) + 1
+			log.Info("Event stream message is %d bytes", sz)
+			size := fmt.Sprintf("%X", sz)
+			r.esBufrw.Write([]byte(size + "\r\n"))
 
-			if f, ok := r.writer.(nethttp.Flusher); ok {
-				f.Flush()
+			lines = strings.Split(data, "\n")
+			for _, ln := range lines {
+				r.esBufrw.Write([]byte(ln + "\n"))
+			}
+			_, err := r.esBufrw.Write([]byte("\r\n"))
+
+			if err != nil {
+				log.Error("Error writing to connection: %s\n", err)
+				r.esConn.Close()
+				break
+			}
+
+			err = r.esBufrw.Flush()
+			if err != nil {
+				log.Error("Error flushing buffer: %s\n", err)
+				r.esConn.Close()
+				break
 			}
 		}
 	}()
