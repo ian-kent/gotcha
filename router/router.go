@@ -10,8 +10,8 @@ import (
 	"github.com/ian-kent/gotcha/router/route"
 	nethttp "net/http"
 	"regexp"
-	"time"
 	"sync"
+	"time"
 )
 
 // http://stackoverflow.com/questions/6564558/wildcards-in-the-pattern-for-http-handlefunc
@@ -28,14 +28,14 @@ type Router struct {
 }
 
 type Route struct {
-	Route *route.Route
+	Route   *route.Route
 	Handler HandlerFunc
 }
 
 func Create(config *Config.Config) *Router {
 	return &Router{
 		Config: config,
-		Routes: make([]*Route,0),
+		Routes: make([]*Route, 0),
 	}
 }
 
@@ -108,7 +108,7 @@ func (h *Router) Handler(methods []string, path string, handler HandlerFunc) *Ro
 	for _, v := range methods {
 		m[v] = 1
 	}
-	h.Routes = append(h.Routes, &Route{Route:&route.Route{m, path, pattern},Handler:handler})
+	h.Routes = append(h.Routes, &Route{Route: &route.Route{m, path, pattern}, Handler: handler})
 	return h
 }
 
@@ -118,7 +118,7 @@ func (h *Router) HandleFunc(methods []string, path string, handler func(*http.Se
 	for _, v := range methods {
 		m[v] = 1
 	}
-	h.Routes = append(h.Routes, &Route{Route:&route.Route{m, path, pattern},Handler:HandlerFunc(handler)})
+	h.Routes = append(h.Routes, &Route{Route: &route.Route{m, path, pattern}, Handler: HandlerFunc(handler)})
 	return h
 }
 
@@ -163,7 +163,7 @@ func (h *Router) Serve(session *http.Session) {
 		}
 	}
 
-	// no pattern matched; send 404 response	
+	// no pattern matched; send 404 response
 	h.Config.Events.Emit(session, events.BeforeHandler, func() {
 		session.RenderNotFound()
 		h.Config.Events.Emit(session, events.AfterHandler, func() {

@@ -27,7 +27,7 @@ See the [introduction](INTRODUCTION.md) or [example applications](assets) for mo
 * Data modeling and form validation
 * Simple action composition
 * Per-connection data stash
-* Streaming/chunked responses
+* Streaming, chunked and EventStream responses
 * Cached template rendering with [html/template](http://golang.org/pkg/html/template)
 * Embedded assets using [jteeuwen/go-bindata](https://github.com/jteeuwen/go-bindata)
 * Not tied to any design pattern (e.g. MVC, MVP etc)

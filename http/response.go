@@ -2,12 +2,14 @@ package http
 
 import (
 	"bytes"
+	"code.google.com/p/go.crypto/bcrypt"
+	"compress/gzip"
+	"crypto/rand"
+	"fmt"
 	"github.com/ian-kent/go-log/log"
 	nethttp "net/http"
 	neturl "net/url"
-	"code.google.com/p/go.crypto/bcrypt"
-	"crypto/rand"
-	"compress/gzip"
+	"strings"
 )
 
 type Response struct {
@@ -16,10 +18,11 @@ type Response struct {
 	buffer     *bytes.Buffer
 	headerSent bool
 
-	Gzipped bool
+	Gzipped  bool
 	gzwriter *gzip.Writer
 
-	IsChunked bool
+	IsChunked     bool
+	IsEventStream bool
 
 	Status  int
 	Headers Headers
@@ -54,11 +57,11 @@ func CreateResponse(session *Session, writer nethttp.ResponseWriter) *Response {
 		buffer:     &bytes.Buffer{},
 		headerSent: false,
 
-		Gzipped: false,
+		Gzipped:   false,
 		IsChunked: false,
-		Status:  200,
-		Headers: make(Headers),
-		Cookies: make(Cookies),
+		Status:    200,
+		Headers:   make(Headers),
+		Cookies:   make(Cookies),
 	}
 }
 
@@ -96,6 +99,54 @@ func (r *Response) WriteText(text string) {
 	r.Write([]byte(text))
 }
 
+func (r *Response) EventStream() chan []byte {
+	c := make(chan []byte)
+
+	r.IsEventStream = true
+	r.Headers.Add("Content-Type", "text/event-stream")
+	r.Headers.Add("Cache-Control", "no-cache")
+	r.Headers.Add("Connection", "keep-alive")
+	r.Write([]byte("\n\n"))
+	r.Send()
+
+	hj, ok := r.writer.(nethttp.Hijacker)
+	if !ok {
+		log.Warn("Connection unsuitable for hijack")
+		return nil
+	}
+	conn, bufrw, err := hj.Hijack()
+	if err != nil {
+		log.Warn("Connection hijack failed")
+		return nil
+	}
+
+	go func() {
+		for b := range c {
+			if len(b) == 0 {
+				log.Trace("Event stream ended")
+				conn.Close()
+				break
+			}
+
+			lines := strings.Split(string(b), "\n")
+			data := ""
+			for _, l := range lines {
+				data += "data: " + l + "\n"
+			}
+			data += "\n"
+			size := fmt.Sprintf("%X", len(data)+1)
+
+			bufrw.Write([]byte(size + "\r\n"))
+			bufrw.Write([]byte(data + "\r\n"))
+
+			if f, ok := r.writer.(nethttp.Flusher); ok {
+				f.Flush()
+			}
+		}
+	}()
+	return c
+}
+
 func (r *Response) Chunked() chan []byte {
 	c := make(chan []byte)
 	r.IsChunked = true
@@ -115,7 +166,7 @@ func (r *Response) Chunked() chan []byte {
 			} else {
 				r.Write(b)
 			}
-			
+
 			if f, ok := r.writer.(nethttp.Flusher); ok {
 				f.Flush()
 			}
@@ -155,7 +206,7 @@ func (r *Response) Send() {
 	for _, c := range r.Cookies {
 		nethttp.SetCookie(r.writer, c)
 	}
-	
+
 	r.writer.WriteHeader(r.Status)
 
 	if r.Gzipped {
@@ -164,7 +215,7 @@ func (r *Response) Send() {
 		r.writer.Write(r.buffer.Bytes())
 	}
 
-	if !r.IsChunked {
+	if !r.IsChunked && !r.IsEventStream {
 		if r.Gzipped {
 			r.gzwriter.Close()
 		}

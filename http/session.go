@@ -14,19 +14,19 @@ import (
 )
 
 type Session struct {
-	Config   *Config.Config
-	Route    *route.Route
-	Request  *Request
-	Response *Response
-	Stash    map[string]interface{}
-	SessionID string
+	Config      *Config.Config
+	Route       *route.Route
+	Request     *Request
+	Response    *Response
+	Stash       map[string]interface{}
+	SessionID   string
 	SessionData map[string]string
 }
 
 func CreateSession(conf *Config.Config, request *nethttp.Request, writer nethttp.ResponseWriter) *Session {
 	session := &Session{
-		Config: conf,
-		Stash:  make(map[string]interface{}, 0),
+		Config:      conf,
+		Stash:       make(map[string]interface{}, 0),
 		SessionData: make(map[string]string),
 	}
 
@@ -41,7 +41,7 @@ func CreateSession(conf *Config.Config, request *nethttp.Request, writer nethttp
 	return session
 }
 
-func (s *Session) loadSessionData() {	
+func (s *Session) loadSessionData() {
 	if sid_cookie, ok := s.Request.Cookies["__SID"]; ok {
 		s.SessionID = sid_cookie.Value
 		log.Info("Retrieved session ID (__SID): %s", s.SessionID)
