@@ -146,6 +146,19 @@ func (session *Session) Render(asset string) {
 	}
 }
 
+func (session *Session) RenderWithLayout(asset string, layout string, key string) {
+	html, err := session.RenderTemplate(asset)
+	if err != nil {
+		session.RenderException(500, err)
+	}
+
+	session.Stash[key] = template.HTML(html)
+	err = session.render(layout)
+	if err != nil {
+		session.RenderException(500, err)
+	}
+}
+
 func (session *Session) RenderNotFound() {
 	session.Stash["Gotcha"].(map[string]interface{})["Error"] = "Not found"
 	session.Response.Status = 404
