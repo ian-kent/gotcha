@@ -59,3 +59,7 @@ func (r *Request) Header() nethttp.Header {
 func (r *Request) Body() io.ReadCloser {
 	return r.req.Body
 }
+
+func (r *Request) Referer() string {
+	return r.req.Referer()
+}
