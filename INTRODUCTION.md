@@ -171,6 +171,14 @@ Examples of Gotcha applications can be found in the assets directory:
 | [new_app](assets/new_app)   | The template for a ```gotcha new``` application
 | [tiny_app](assets/tiny_app) | A pointless attempt at golfing a gotcha application
 
+There's also a few real-world applications built with Gotcha:
+
+| Application
+| ---------------------------------------------------- |
+| [Go-MailHog](https://github.com/ian-kent/Go-MailHog) |
+| [websysd](https://github.com/ian-kent/websysd)       |
+| [GoPAN](https://github.com/ian-kent/gopan/)          |
+
 ### Licence
 
 Copyright ©‎ 2014, Ian Kent (http://www.iankent.eu).
