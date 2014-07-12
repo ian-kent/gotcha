@@ -173,11 +173,11 @@ Examples of Gotcha applications can be found in the assets directory:
 
 There's also a few real-world applications built with Gotcha:
 
-| Application
-| ---------------------------------------------------- |
-| [Go-MailHog](https://github.com/ian-kent/Go-MailHog) |
-| [websysd](https://github.com/ian-kent/websysd)       |
-| [GoPAN](https://github.com/ian-kent/gopan/)          |
+| Application                                          | Description
+| ---------------------------------------------------- | -----------
+| [Go-MailHog](https://github.com/ian-kent/Go-MailHog) | Development tool to intercept and render e-mails
+| [websysd](https://github.com/ian-kent/websysd)       | Like Marathon or Upstart, for your desktop!
+| [GoPAN](https://github.com/ian-kent/gopan/)          | Perl dependency management toolchain
 
 ### Licence
 
