@@ -12,6 +12,8 @@ import (
 	nethttp "net/http"
 	neturl "net/url"
 	"strings"
+	"encoding/json"
+	"encoding/base64"
 )
 
 type Response struct {
@@ -71,10 +73,25 @@ func CreateResponse(session *Session, writer nethttp.ResponseWriter) *Response {
 	}
 }
 
+func toBase64(b []byte) string {
+    var buf bytes.Buffer
+    encoder := base64.NewEncoder(base64.StdEncoding, &buf)
+    encoder.Write(b)
+    encoder.Close()
+    return buf.String()
+}
+
 func (r *Response) Gzip() {
 	r.Gzipped = true
 	r.Headers.Add("Content-Encoding", "gzip")
 	r.gzwriter = gzip.NewWriter(r.writer)
+}
+
+func (r *Response) SessionID() string {
+	if len(r.session.SessionData) > 0 && len(r.session.SessionID) == 0 {
+		r.createSessionId()
+	}
+	return r.session.SessionID
 }
 
 func (r *Response) createSessionId() {
@@ -86,6 +103,22 @@ func (r *Response) createSessionId() {
 	r.Cookies.Set(&nethttp.Cookie{
 		Name:  "__SID",
 		Value: r.session.SessionID,
+		Path:  "/",
+	})
+}
+
+func (r *Response) writeSessionData() {
+	b, err := json.Marshal(r.session.SessionData)
+	
+	if err != nil {
+		r.session.RenderException(500, err)
+		return
+	}
+
+	r.Cookies.Set(&nethttp.Cookie{
+		Name:  "__SD",
+		Value: toBase64(b),
+		Path:  "/",
 	})
 }
 
@@ -217,10 +250,8 @@ func (r *Response) Send() {
 	}
 	r.headerSent = true
 
-	if len(r.session.SessionData) > 0 && len(r.session.SessionID) == 0 {
-		r.createSessionId()
-		//r.writeSessionData()
-	}
+	r.SessionID()
+	r.writeSessionData()
 
 	for k, v := range r.Headers {
 		for _, h := range v {

@@ -11,6 +11,8 @@ import (
 	nethttp "net/http"
 	neturl "net/url"
 	"runtime"
+	"encoding/json"
+	"encoding/base64"
 )
 
 type Session struct {
@@ -21,6 +23,11 @@ type Session struct {
 	Stash       map[string]interface{}
 	SessionID   string
 	SessionData map[string]string
+}
+
+func fromBase64(s string) []byte {
+	data, _ := base64.StdEncoding.DecodeString(s)
+	return data
 }
 
 func CreateSession(conf *Config.Config, request *nethttp.Request, writer nethttp.ResponseWriter) *Session {
@@ -47,10 +54,22 @@ func (s *Session) loadSessionData() {
 		log.Info("Retrieved session ID (__SID): %s", s.SessionID)
 	}
 
-	if sd_cookie, ok := s.Request.Cookies["__SD"]; ok {
-		// FIXME deserialise
-		s.SessionData["TEMP"] = sd_cookie.Value
-		log.Info("Retrieved session data: %s", s.SessionData)
+	s.readSessionData()
+}
+
+func (s *Session) readSessionData() {
+	sd, ok := s.Request.Cookies["__SD"]
+	if ok && sd.Value != "" {
+		log.Info("Retrieved session data (__SD): %s", sd.Value)
+		sdata := make(map[string]string)
+		err := json.Unmarshal([]byte(fromBase64(sd.Value)), &sdata)
+		
+		if err != nil {
+			s.RenderException(500, err)
+			return
+		}
+
+		s.SessionData = sdata
 	}
 }
 
