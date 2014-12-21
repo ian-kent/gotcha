@@ -73,6 +73,10 @@ func CreateResponse(session *Session, writer nethttp.ResponseWriter) *Response {
 	}
 }
 
+func (r *Response) GetWriter() nethttp.ResponseWriter {
+	return r.writer
+}
+
 func toBase64(b []byte) string {
     var buf bytes.Buffer
     encoder := base64.NewEncoder(base64.StdEncoding, &buf)
