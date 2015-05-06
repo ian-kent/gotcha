@@ -14,6 +14,10 @@ You might want these instead:
 * [jteeuwen/go-bindata](https://github.com/jteeuwen/go-bindata)
 * [ian-kent/goose](https://github.com/ian-kent/goose)
 
+And perhaps this:
+
+* [go-angularjs-jquery-bootstrap-boilerplate](https://github.com/ian-kent/go-angularjs-jquery-bootstrap-boilerplate)
+
 ### Getting started
 
 * Make sure your [Go environment](http://golang.org/doc/install) is configured.
