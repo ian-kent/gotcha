@@ -3,6 +3,17 @@ Gotcha
 
 A(nother) web framework for Go.
 
+# DEPRECATED
+
+This "framework" should never have been written, isn't being maintained, and isn't recommended for use...
+
+You might want these instead:
+
+* [Gorilla Toolkit](http://www.gorillatoolkit.org/)
+* [unrolled/render](https://github.com/unrolled/render)
+* [jteeuwen/go-bindata](https://github.com/jteeuwen/go-bindata)
+* [ian-kent/goose](https://github.com/ian-kent/goose)
+
 ### Getting started
 
 * Make sure your [Go environment](http://golang.org/doc/install) is configured.
