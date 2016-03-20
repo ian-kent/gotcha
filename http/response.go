@@ -3,17 +3,18 @@ package http
 import (
 	"bufio"
 	"bytes"
-	"code.google.com/p/go.crypto/bcrypt"
 	"compress/gzip"
 	"crypto/rand"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
-	"github.com/ian-kent/go-log/log"
 	"net"
 	nethttp "net/http"
 	neturl "net/url"
 	"strings"
-	"encoding/json"
-	"encoding/base64"
+
+	"github.com/ian-kent/go-log/log"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Response struct {
@@ -78,11 +79,11 @@ func (r *Response) GetWriter() nethttp.ResponseWriter {
 }
 
 func toBase64(b []byte) string {
-    var buf bytes.Buffer
-    encoder := base64.NewEncoder(base64.StdEncoding, &buf)
-    encoder.Write(b)
-    encoder.Close()
-    return buf.String()
+	var buf bytes.Buffer
+	encoder := base64.NewEncoder(base64.StdEncoding, &buf)
+	encoder.Write(b)
+	encoder.Close()
+	return buf.String()
 }
 
 func (r *Response) Gzip() {
@@ -113,7 +114,7 @@ func (r *Response) createSessionId() {
 
 func (r *Response) writeSessionData() {
 	b, err := json.Marshal(r.session.SessionData)
-	
+
 	if err != nil {
 		r.session.RenderException(500, err)
 		return

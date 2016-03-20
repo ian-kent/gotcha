@@ -2,17 +2,19 @@ package http
 
 import (
 	"bytes"
-	"code.google.com/p/go-uuid/uuid"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
-	"github.com/ian-kent/go-log/log"
-	"github.com/ian-kent/gotcha/config"
-	"github.com/ian-kent/gotcha/router/route"
 	"html/template"
 	nethttp "net/http"
 	neturl "net/url"
 	"runtime"
-	"encoding/json"
-	"encoding/base64"
+
+	"github.com/satori/go.uuid"
+
+	"github.com/ian-kent/go-log/log"
+	"github.com/ian-kent/gotcha/config"
+	"github.com/ian-kent/gotcha/router/route"
 )
 
 type Session struct {
@@ -63,7 +65,7 @@ func (s *Session) readSessionData() {
 		log.Info("Retrieved session data (__SD): %s", sd.Value)
 		sdata := make(map[string]string)
 		err := json.Unmarshal([]byte(fromBase64(sd.Value)), &sdata)
-		
+
 		if err != nil {
 			s.RenderException(500, err)
 			return
