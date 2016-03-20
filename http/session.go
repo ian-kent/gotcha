@@ -191,7 +191,7 @@ func (session *Session) RenderNotFound() {
 }
 
 func (session *Session) RenderException(status int, err error) {
-	key := uuid.NewUUID().String()
+	key := uuid.NewV4().String()
 	session.Response.Status = status
 	session.Stash["Gotcha"].(map[string]interface{})["Error"] = err.Error()
 	session.Stash["Gotcha"].(map[string]interface{})["ErrorId"] = key
